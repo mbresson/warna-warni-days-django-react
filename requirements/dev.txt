@@ -1,0 +1,5 @@
+-r base.txt
+
+autopep8==1.5.4
+coverage==5.2.1
+mypy==0.782
