@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from core.utils import validate_color
 
 
 class Day(models.Model):
@@ -14,6 +15,12 @@ class Day(models.Model):
     )
 
     date = models.DateField()
+
+    color = models.CharField(
+        max_length=7,
+        validators=[validate_color],
+        db_index=True
+    )
 
     class Meta:
         db_table = 'day'
