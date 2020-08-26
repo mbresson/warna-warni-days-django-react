@@ -14,8 +14,20 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
+from rest_framework import routers
+from days.urls import urlpatterns as days_urlpatterns
+from days.views import DayViewSet
+from django.conf import settings
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('', include('days.urls'))
 ]
+
+if settings.DEBUG:
+    devonly_paths = [
+        path('admin/', admin.site.urls),
+        path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    ]
+
+    urlpatterns.extend(devonly_paths)
