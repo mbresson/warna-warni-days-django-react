@@ -1,0 +1,21 @@
+
+# This is a dev-only Dockerfile to make development easier:
+#  - instead of copying the whole application code in the image,
+#    it will be made accessible via a volume, to allow for code reload
+#  - requirements will be re-installed each time the server is started
+# Hence the image will not have to be re-built for any developer-side change.
+# Suffice to say, the production server should not and will not be run this way.
+
+########## BASE #########
+
+FROM python:3
+
+
+########## CONFIGURATION ##########
+
+ENV PYTHONUNBUFFERED 1
+
+RUN mkdir /code
+WORKDIR /code
+
+CMD pip install -r requirements/dev.txt && python manage.py migrate && python manage.py runserver 0.0.0.0:8000

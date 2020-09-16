@@ -82,7 +82,7 @@ DATABASES = {
         'NAME': os.environ['POSTGRES_DB'],
         'USER': os.environ['POSTGRES_USER'],
         'PASSWORD': os.environ['POSTGRES_PASSWORD'],
-        'HOST': '127.0.0.1',
+        'HOST': os.environ['POSTGRES_HOST'],
         'PORT': '5432',
     }
 }
@@ -112,7 +112,10 @@ AUTH_PASSWORD_VALIDATORS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
-    ]
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 }
 
 
@@ -133,4 +136,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/api/static/'
+
+
+# Cookies
+
+SESSION_COOKIE_SAMESITE = 'Strict'
+SESSION_COOKIE_SECURE = not DEBUG
+
+CSRF_COOKIE_SAMESITE = 'Strict'
+CSRF_COOKIE_SECURE = not DEBUG

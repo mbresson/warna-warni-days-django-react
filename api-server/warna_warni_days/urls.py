@@ -13,15 +13,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
-from days.urls import urlpatterns as days_urlpatterns
-from days.views import DayViewSet
-from django.conf import settings
 
 urlpatterns = [
-    path('', include('days.urls'))
+    path('api/', include('days.urls')),
+    path('api/auth/', include('auth.urls')),
 ]
 
 if settings.DEBUG:

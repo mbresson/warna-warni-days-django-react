@@ -1,0 +1,15 @@
+
+# This is a dev-only Dockerfile: to avoid re-building the image on each change,
+# the code will be made accessible via a volume to allow for hot reload.
+
+########## BASE #########
+
+FROM node:lts
+
+
+########## CONFIGURATION ##########
+
+RUN mkdir /home/node/code
+WORKDIR /home/node/code
+
+CMD ["npm", "run", "dev"]
