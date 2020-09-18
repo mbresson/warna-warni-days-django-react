@@ -1,10 +1,10 @@
 from django.core.exceptions import ValidationError
-from django.test import TestCase
+from django.test import SimpleTestCase
 
 from .utils import validate_color
 
 
-class ValidateColorTestCase(TestCase):
+class ValidateColorTestCase(SimpleTestCase):
     def test_valid_color_passes_validation(self):
         color = '#913BC6'
 
