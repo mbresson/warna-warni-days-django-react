@@ -1,5 +1,7 @@
 -r base.txt
 
 autopep8==1.5.4
+bpython==0.19
 coverage==5.2.1
+django-extensions==3.0.9
 mypy==0.782
