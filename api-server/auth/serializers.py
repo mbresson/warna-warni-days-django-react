@@ -9,28 +9,30 @@ class SignUpSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     def create(self, validated_data):
-        user = UserModel.objects.create(
+        return UserModel.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
+            password=validated_data['password'],
         )
-
-        user.set_password(validated_data['password'])
-        user.save()
-
-        return user
 
     def validate_email(self, value):
         email = BaseUserManager.normalize_email(value)
 
         if UserModel.objects.filter(email=email).exists():
             raise serializers.ValidationError(
-                "A user with that email already exists")
+                "A user with that email already exists.")
 
         return email
 
     class Meta:
         model = UserModel
         fields = ('id', 'username', 'email', 'password')
+        extra_kwargs = {
+            'email': {
+                'required': True,
+                'allow_blank': False,
+            }
+        }
 
 
 class ProfileSerializer(serializers.ModelSerializer):
