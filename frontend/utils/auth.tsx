@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
+import { get as getCookie } from 'js-cookie'
 
 type AuthStateAuthenticated = {
     state: "authenticated";
@@ -22,6 +23,11 @@ const AuthContext = createContext<AuthState>({
     state: "loading",
 })
 
+const PATHS_ACCESSIBLE_TO_UNAUTHENTICATED_USERS = [
+    '/login',
+    '/signup',
+]
+
 const AuthProvider = ({ children }) => {
     const { pathname, events, push } = useRouter()
     const [user, setUser] = useState<AuthState>({ state: "loading" })
@@ -38,30 +44,25 @@ const AuthProvider = ({ children }) => {
                     username: profile.username,
                     email: profile.email,
                 })
-                console.log('authenticated')
             } else {
                 throw Error(`Authentication failed: ${response.status}`)
             }
         } catch (err) {
-            console.error(err)
             setUser({ state: "unauthenticated" })
         }
     }
 
     useEffect(() => {
-        console.log("getting user")
         getUser()
     }, [pathname])
 
     useEffect(() => {
-        console.log("new route: ", pathname)
-
         const handleRouteChange = url => {
             if (user.state == "loading") {
                 return
             }
 
-            if (url !== '/login' && user.state != "authenticated") {
+            if (!(PATHS_ACCESSIBLE_TO_UNAUTHENTICATED_USERS.includes(url) || user.state == "authenticated")) {
                 push('/login')
             }
         }
@@ -81,5 +82,37 @@ const AuthProvider = ({ children }) => {
 }
 
 const useAuth = () => useContext(AuthContext)
+
+export const loginToServer = async (username: string, password: string): Promise<Boolean> => {
+    try {
+        const response = await fetch(
+            '/api/auth/login/',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username,
+                    password,
+                }),
+            })
+
+        return response.status == 200
+    } catch {
+        return false
+    }
+}
+
+export const logoutFromServer = async (): Promise<void> => {
+    const csrfToken = getCookie('csrftoken')
+
+    await fetch('/api/auth/logout/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken,
+        }
+    })
+}
 
 export { AuthProvider, useAuth }

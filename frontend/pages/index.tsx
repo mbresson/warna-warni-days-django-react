@@ -1,27 +1,20 @@
 import Head from 'next/head'
-import { useAuth } from '../contexts/auth'
-import { get as getCookie } from 'js-cookie'
-
-const logout = async () => {
-  const csrfToken = getCookie('csrftoken')
-
-  fetch('/api/auth/logout/', {
-    method: 'POST',
-    headers: {
-      'X-CSRFToken': csrfToken,
-    }
-  })
-  location.reload()
-}
+import { useAuth, logoutFromServer } from '../utils/auth'
+import { useRouter } from 'next/router'
 
 const Index: React.FC<{}> = () => {
   const auth = useAuth()
+  const router = useRouter()
+
+  const logout = () => {
+    logoutFromServer()
+    router.push('/login')
+  }
 
   return (
     <>
       <Head>
         <title>Home</title>
-        <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <div className="w-full max-w-xs m-auto">
