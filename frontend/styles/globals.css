@@ -7,3 +7,55 @@ body {
   margin: 0;
   padding: 0;
 }
+
+html {
+  @apply bg-gradient-to-tr from-blue-200 to-orange-200 min-h-screen;
+}
+
+.input-field {
+  @apply border border-gray-500 p-2 w-3/4;
+}
+
+.input-field.invalid {
+  @apply border-red-600;
+}
+
+.input-error {
+  @apply text-red-600;
+}
+
+.input-label {
+  @apply text-lg block text-center pt-4 pb-2;
+}
+
+.input-group {
+  @apply m-2 my-6;
+}
+
+.form {
+  @apply m-auto bg-white border shadow-xs border-gray-400 p-6 text-center;
+}
+
+@screen sm {
+  .form {
+    @apply max-w-3xl;
+  }
+}
+
+@screen lg {
+  .form {
+    @apply max-w-6xl;
+  }
+}
+
+.form-submit {
+  @apply bg-green-600 border border-green-800 text-white text-lg font-bold py-4 px-8 mt-6 mb-4;
+}
+
+.form-submit:hover {
+  @apply bg-green-500;
+}
+
+.form-submit:disabled {
+  @apply cursor-not-allowed bg-green-400;
+}

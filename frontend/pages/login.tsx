@@ -1,62 +1,104 @@
-import Head from 'next/head'
-import React, { useState } from 'react'
-import { useRouter } from 'next/router'
-import { loginToServer } from '../utils/auth'
+import Head from "next/head";
+import React, { useState } from "react";
+import { useRouter } from "next/router";
+import { loginToServer } from "../utils/auth";
 
 const Login: React.FC<{}> = () => {
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
-    const router = useRouter()
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [queryInProgress, setQueryInProgress] = useState(false);
+  const [error, setError] = useState("");
 
-    const onLoginFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+  const router = useRouter();
 
-        const successfullyLoggedIn = await loginToServer(username, password)
-        if (successfullyLoggedIn) {
-            router.push('/')
-        }
+  const onLoginFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+    setQueryInProgress(true);
+
+    const loginResponse = await loginToServer(username, password);
+    setQueryInProgress(false);
+    if (loginResponse.state == "succeeded") {
+      router.push("/");
+    } else {
+      setError(loginResponse.error);
     }
+  };
 
-    return (
-        <>
-            <Head>
-                <title>Login page </title>
-            </Head>
+  return (
+    <>
+      <Head>
+        <title>Login page </title>
+      </Head>
 
-            <div className="w-full max-w-xs m-auto">
-                <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={onLoginFormSubmit}>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
-                            Username
-                        </label>
+      <form className="form" onSubmit={onLoginFormSubmit}>
+        <h2 className="text-3xl text-center mb-4">Welcome!</h2>
 
-                        <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="Username" name="username" value={username} onChange={e => setUsername(e.target.value)} />
-                    </div>
-                    <div className="mb-6">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-                            Password
-                        </label>
+        <p className="mb-4">Fill in the form to login with your credentials:</p>
 
-                        <input className="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" placeholder="******************" name="password" value={password} onChange={e => setPassword(e.target.value)} />
-                        <p className="text-red-500 text-xs italic">Please choose a password.</p>
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-                            Sign In
-                        </button>
+        <div className="md:grid md:grid-cols-2 p-6">
+          <div>
+            <div className="input-group">
+              <label className="input-label" htmlFor="username">
+                Username
+              </label>
 
-                        <a className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="#">
-                            Forgot Password?
-                        </a>
-                    </div>
-                </form>
+              <input
+                className="input-field"
+                id="username"
+                type="text"
+                placeholder="Username"
+                name="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
             </div>
+          </div>
 
-            <footer className="w-full text-center text-md">
-                Hello World!
-            </footer>
-        </>
-    )
-}
+          <div>
+            <div className="input-group">
+              <label className="input-label" htmlFor="password">
+                Password
+              </label>
 
-export default Login
+              <input
+                className="input-field"
+                id="password"
+                type="password"
+                placeholder="***"
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+        </div>
+
+        {error && <p className="text-red-600 text-xl">{error}</p>}
+
+        <button
+          className="form-submit"
+          type="submit"
+          disabled={queryInProgress}
+        >
+          {queryInProgress ? "loading..." : "Log me in"}
+        </button>
+
+        <p>
+          <a
+            className="inline-block align-baseline font-bold text-sm text-orange-500 hover:text-orange-700"
+            href="#"
+          >
+            Forgot your password? Click here to reset it.
+          </a>
+        </p>
+      </form>
+
+      <footer className="w-full text-center text-md">Hello World!</footer>
+    </>
+  );
+};
+
+export default Login;

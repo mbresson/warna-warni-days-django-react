@@ -1,118 +1,113 @@
+import { get as getCookie } from "js-cookie";
 
-import React, { createContext, useContext, useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
-import { get as getCookie } from 'js-cookie'
+type LoginResponseFailed = {
+  state: "failed";
+  error: string;
+};
 
-type AuthStateAuthenticated = {
-    state: "authenticated";
-    username: string;
-    email: string;
-}
+type LoginResponseSucceeded = {
+  state: "succeeded";
+};
 
-type AuthStateUnauthenticated = {
-    state: "unauthenticated";
-}
+export type LoginResponse = LoginResponseFailed | LoginResponseSucceeded;
 
-type AuthStateLoading = {
-    state: "loading";
-}
+export const loginToServer = async (
+  username: string,
+  password: string
+): Promise<LoginResponse> => {
+  try {
+    const response = await fetch("/api/auth/login/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username,
+        password,
+      }),
+    });
 
-type AuthState = AuthStateAuthenticated | AuthStateUnauthenticated | AuthStateLoading
+    if (response.status == 200) {
+      return {
+        state: "succeeded",
+      };
+    } else {
+      const body = await response.json();
 
-const AuthContext = createContext<AuthState>({
-    state: "loading",
-})
-
-const PATHS_ACCESSIBLE_TO_UNAUTHENTICATED_USERS = [
-    '/login',
-    '/signup',
-]
-
-const AuthProvider = ({ children }) => {
-    const { pathname, events, push } = useRouter()
-    const [user, setUser] = useState<AuthState>({ state: "loading" })
-
-    async function getUser() {
-        try {
-            const response = await fetch('/api/auth/profile/')
-
-            if (response.status == 200) {
-                const profile = await response.json()
-
-                setUser({
-                    state: "authenticated",
-                    username: profile.username,
-                    email: profile.email,
-                })
-            } else {
-                throw Error(`Authentication failed: ${response.status}`)
-            }
-        } catch (err) {
-            setUser({ state: "unauthenticated" })
-        }
+      return {
+        state: "failed",
+        error: body["detail"],
+      };
     }
-
-    useEffect(() => {
-        getUser()
-    }, [pathname])
-
-    useEffect(() => {
-        const handleRouteChange = url => {
-            if (user.state == "loading") {
-                return
-            }
-
-            if (!(PATHS_ACCESSIBLE_TO_UNAUTHENTICATED_USERS.includes(url) || user.state == "authenticated")) {
-                push('/login')
-            }
-        }
-
-        handleRouteChange(pathname)
-
-        events.on('routeChangeStart', handleRouteChange)
-
-        return () => {
-            events.off('routeChangeStart', handleRouteChange)
-        }
-    }, [user])
-
-    return (
-        <AuthContext.Provider value={{ ...user }}>{children}</AuthContext.Provider>
-    )
-}
-
-const useAuth = () => useContext(AuthContext)
-
-export const loginToServer = async (username: string, password: string): Promise<Boolean> => {
-    try {
-        const response = await fetch(
-            '/api/auth/login/',
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username,
-                    password,
-                }),
-            })
-
-        return response.status == 200
-    } catch {
-        return false
-    }
-}
+  } catch {
+    return {
+      state: "failed",
+      error:
+        "The server encountered an unexpected error, please try again later",
+    };
+  }
+};
 
 export const logoutFromServer = async (): Promise<void> => {
-    const csrfToken = getCookie('csrftoken')
+  const csrfToken = getCookie("csrftoken");
 
-    await fetch('/api/auth/logout/', {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': csrfToken,
-        }
-    })
-}
+  await fetch("/api/auth/logout/", {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": csrfToken,
+    },
+  });
+};
 
-export { AuthProvider, useAuth }
+type SignUpResponseFailed = {
+  state: "failed";
+  errors: {
+    [fieldName: string]: string[];
+  };
+};
+
+type SignUpResponseSucceeded = {
+  state: "succeeded";
+};
+
+export type SignUpResponse = SignUpResponseFailed | SignUpResponseSucceeded;
+
+export const signUpToServer = async (
+  username: string,
+  password: string,
+  email: string
+): Promise<SignUpResponse> => {
+  try {
+    const response = await fetch("/api/auth/signup/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username,
+        password,
+        email,
+      }),
+    });
+
+    if (response.status == 201) {
+      return {
+        state: "succeeded",
+      };
+    } else {
+      return {
+        state: "failed",
+        errors: await response.json(),
+      };
+    }
+  } catch {
+    return {
+      state: "failed",
+      errors: {
+        internalError: [
+          "The server encountered an unexpected error, please try again later",
+        ],
+      },
+    };
+  }
+};

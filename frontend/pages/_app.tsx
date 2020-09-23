@@ -1,8 +1,8 @@
-import '../styles/globals.css'
-import { AppProps } from 'next/app'
-import Head from 'next/head'
-import 'whatwg-fetch' // polyfills window.fetch
-import { AuthProvider } from '../utils/auth'
+import "../styles/globals.css";
+import { AppProps } from "next/app";
+import Head from "next/head";
+import "whatwg-fetch"; // polyfills window.fetch
+import { AuthProvider } from "../utils/AuthProvider";
 
 const App: React.FC<AppProps> = ({ Component, pageProps }) => {
   return (
@@ -11,9 +11,11 @@ const App: React.FC<AppProps> = ({ Component, pageProps }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="h-screen bg-gradient-to-tr from-blue-200 to-orange-200">
-        <main className="p-4 shadow rounded bg-white mb-20" >
-          <h1 className="italic text-center text-4xl">Warna - Warni - Days!</h1>
+      <div>
+        <main className="p-2 border border-gray-500 bg-white md:mb-20">
+          <h1 className="italic text-center text-3xl tracking-tighter">
+            Warna - Warni - Days
+          </h1>
         </main>
 
         <AuthProvider>
@@ -21,7 +23,7 @@ const App: React.FC<AppProps> = ({ Component, pageProps }) => {
         </AuthProvider>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;
