@@ -1,5 +1,4 @@
-from django.contrib.auth import authenticate, forms, login, logout, get_user_model
-from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate, login, logout
 from rest_framework import exceptions, permissions, response, status
 from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView
@@ -7,10 +6,8 @@ from .serializers import SignUpSerializer, ProfileSerializer
 
 
 class SessionLoginView(APIView):
-    authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
-    @csrf_exempt
     def post(self, request, format=None):
         username = request.data['username']
         password = request.data['password']
@@ -32,7 +29,6 @@ class SessionLogoutView(APIView):
 
 
 class SignUpView(CreateAPIView):
-    model = get_user_model()
     permission_classes = [permissions.AllowAny]
     serializer_class = SignUpSerializer
 
