@@ -49,7 +49,7 @@ class SignupTestCase(TestCase):
 
     CLIENT = Client()
 
-    def test_successfully_creates_user_when_provided_correct_values(self):
+    def test_creates_new_account_and_automatically_logs_new_user_in(self):
         response = self.CLIENT.post(
             reverse('auth-signup'),
             {
@@ -60,6 +60,7 @@ class SignupTestCase(TestCase):
         )
 
         self.assertEqual(response.status_code, 201)
+        self.assertIn('sessionid', response.cookies)
 
         self.assertTrue(
             UserModel.objects.filter(username='VikramSeth').exists()
