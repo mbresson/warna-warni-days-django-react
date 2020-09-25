@@ -10,8 +10,9 @@ The goal is to make a simple tool for people to track their emotions on the long
 The project is fully containerized with docker. If you have docker and docker-compose installed, all you need to get started is to
 
 1. Clone the repo && cd into it
-2. `docker-compose -f docker-compose.dev.yml up -d`
-3. Visit http://localhost:8080
+2. Create a file .dev.env based on .env.example and fill it with your specific settings
+3. `docker-compose -f docker-compose.dev.yml up -d`
+4. Visit http://localhost:8080
 
 Both backend and frontend will automatically reload whenever you edit the API server code (api-server/) and the React code (frontend/).
 
