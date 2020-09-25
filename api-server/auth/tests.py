@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
+from django.core import mail
 from django.urls import reverse
 from django.test import Client, TestCase
+import re
 
 UserModel = get_user_model()
 
@@ -87,3 +89,69 @@ class SignupTestCase(TestCase):
                 'email': ['A user with that email already exists.'],
             }
         )
+
+
+class ResetPasswordTestCase(TestCase):
+
+    CLIENT = Client()
+
+    @classmethod
+    def setUpTestData(cls):
+        UserModel.objects.create_user(
+            username='Someone-s-Great-Grandfather',
+            email='email_set_up_by_my_grandchild@wanadoo.com',
+            password='OoopsIAlreadyForgotThis!',
+        )
+
+    def emails_sent(self):
+        return len(mail.outbox)
+
+    def test_resets_password_and_sends_email(self):
+        response = self.CLIENT.post(
+            reverse('auth-reset-password'),
+            {
+                'username': 'Someone-s-Great-Grandfather',
+                'email': 'email_set_up_by_my_grandchild@wanadoo.com',
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.emails_sent(), 1)
+
+        sent_message = mail.outbox[0].body
+
+        new_password = re.search(
+            r'New password: (.*)\n', sent_message).group(1)
+
+        user = UserModel.objects.get(username='Someone-s-Great-Grandfather')
+
+        self.assertTrue(user.check_password(new_password))
+
+    def test_returns_200_and_does_nothing_if_username_matches_but_email_is_wrong(self):
+        response = self.CLIENT.post(
+            reverse('auth-reset-password'),
+            {
+                'username': 'Someone-s-Great-Grandfather',
+                'email': 'not-the-right@email.com',
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.emails_sent(), 0)
+
+        user = UserModel.objects.get(username='Someone-s-Great-Grandfather')
+
+        # check that password is unchanged
+        self.assertTrue(user.check_password('OoopsIAlreadyForgotThis!'))
+
+    def test_returns_200_and_does_nothing_when_no_account_found(self):
+        response = self.CLIENT.post(
+            reverse('auth-reset-password'),
+            {
+                'username': 'IDoNotExist',
+                'email': 'ghost@email.com',
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.emails_sent(), 0)

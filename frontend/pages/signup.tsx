@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { signUpToServer } from "../utils/auth";
@@ -55,102 +56,98 @@ const Signup: React.FC<{}> = () => {
   return (
     <>
       <Head>
-        <title>Signup page </title>
+        <title>Sign up</title>
       </Head>
 
-      <form className="form" onSubmit={onSignupFormSubmit}>
-        <h2 className="text-3xl text-center mb-4">Welcome!</h2>
+      <form className="text-center" onSubmit={onSignupFormSubmit}>
+        <h2 className="main-title">Welcome!</h2>
 
-        <p className="mb-4">Fill in the form to create your account:</p>
+        <p className="mb-4">Fill in the form to create your account.</p>
 
         <div className="md:grid md:grid-cols-2 p-6">
           <div>
-            <div className="input-group">
-              <label className="input-label" htmlFor="username">
-                Username
-              </label>
+            <label className="input-label" htmlFor="username">
+              Username
+            </label>
 
-              <input
-                className={"input-field " + (errors.username ? "invalid" : "")}
-                id="username"
-                type="text"
-                placeholder="Username"
-                name="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
+            <input
+              className={errors.username ? "bad-feeling" : ""}
+              id="username"
+              type="text"
+              placeholder="Username"
+              name="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
 
-              {errors.username && (
-                <p className="input-error">{errors.username}</p>
-              )}
-            </div>
-
-            <div className="input-group">
-              <label className="input-label" htmlFor="email">
-                Email<sup className="font-bold">1</sup>
-              </label>
-
-              <input
-                className={"input-field " + (errors.email ? "invalid" : "")}
-                id="email"
-                type="email"
-                placeholder="your@email.com"
-                name="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-
-              {errors.email && <p className="input-error">{errors.email}</p>}
-            </div>
+            {errors.username && (
+              <p className="bad-feeling">{errors.username}</p>
+            )}
           </div>
 
           <div>
-            <div className="input-group">
-              <label className="input-label" htmlFor="password">
-                Password
-              </label>
+            <label className="input-label" htmlFor="email">
+              Email<sup className="font-bold">1</sup>
+            </label>
 
-              <input
-                className={"input-field " + (errors.password ? "invalid" : "")}
-                id="password"
-                type="password"
-                placeholder="***"
-                name="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+            <input
+              className={errors.email ? "bad-feeling" : ""}
+              id="email"
+              type="email"
+              placeholder="your@email.com"
+              name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
 
-              {errors.password && (
-                <p className="input-error">{errors.password}</p>
-              )}
-            </div>
+            {errors.email && <p className="bad-feeling">{errors.email}</p>}
+          </div>
 
-            <div className="input-group">
-              <label className="input-label" htmlFor="password2">
-                Password (repeat)
-              </label>
+          <div>
+            <label className="input-label" htmlFor="password">
+              Password
+            </label>
 
-              <input
-                className={
-                  "input-field " +
-                  (errors.passwordConfirmation ? "invalid" : "")
-                }
-                id="password2"
-                type="password"
-                placeholder="***"
-                name="password2"
-                value={passwordConfirmation}
-                onChange={(e) => setPasswordConfirmation(e.target.value)}
-                required
-              />
+            <input
+              className={errors.password ? "bad-feeling" : ""}
+              id="password"
+              type="password"
+              placeholder="***"
+              name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
 
-              {errors.passwordConfirmation && (
-                <p className="input-error">{errors.passwordConfirmation}</p>
-              )}
-            </div>
+            {errors.password && (
+              <p className="bad-feeling">{errors.password}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="input-label" htmlFor="password2">
+              Password (repeat)
+            </label>
+
+            <input
+              className={
+                "input-field " +
+                (errors.passwordConfirmation ? "bad-feeling" : "")
+              }
+              id="password2"
+              type="password"
+              placeholder="***"
+              name="password2"
+              value={passwordConfirmation}
+              onChange={(e) => setPasswordConfirmation(e.target.value)}
+              required
+            />
+
+            {errors.passwordConfirmation && (
+              <p className="bad-feeling">{errors.passwordConfirmation}</p>
+            )}
           </div>
         </div>
 
@@ -166,16 +163,22 @@ const Signup: React.FC<{}> = () => {
 
         {!errors.internalError && (
           <button
-            className="form-submit"
+            className="big positive-feeling"
             type="submit"
             disabled={queryInProgress}
           >
             {queryInProgress ? "loading..." : "Sign me up!"}
           </button>
         )}
-      </form>
 
-      <footer className="w-full text-center text-md">Hello World!</footer>
+        <div className="mt-6">
+          <Link href="/login">
+            <a className="font-bold text-xl positive-feeling clickable hover:underline">
+              Already have an account? Click here to log in.
+            </a>
+          </Link>
+        </div>
+      </form>
     </>
   );
 };

@@ -24,7 +24,11 @@ const AuthContext = createContext<AuthState>({
   state: "loading",
 });
 
-const PATHS_ACCESSIBLE_TO_UNAUTHENTICATED_USERS = ["/login", "/signup"];
+const PATHS_ACCESSIBLE_TO_UNAUTHENTICATED_USERS = [
+  "/login",
+  "/signup",
+  "/reset-password",
+];
 
 export const AuthProvider = ({ children }) => {
   const { pathname, events, push } = useRouter();

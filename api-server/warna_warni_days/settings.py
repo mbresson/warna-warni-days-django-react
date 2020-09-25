@@ -61,7 +61,7 @@ ROOT_URLCONF = 'warna_warni_days.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['auth/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -114,6 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # DRF
 
 REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'core.utils.custom_exception_handler',
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
     ],
@@ -125,7 +126,7 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '100/minute',
+        'anon': '50/minute',
         'user': '5000/minute',
     },
 }
@@ -158,3 +159,13 @@ SESSION_COOKIE_SECURE = not DEBUG
 
 CSRF_COOKIE_SAMESITE = 'Strict'
 CSRF_COOKIE_SECURE = not DEBUG
+
+
+# Emailing
+
+EMAIL_HOST = os.environ['EMAIL_SMTP_HOST']
+EMAIL_PORT = os.environ['EMAIL_SMTP_PORT']
+EMAIL_HOST_USER = os.environ['EMAIL_SMTP_USER']
+EMAIL_HOST_PASSWORD = os.environ['EMAIL_SMTP_PASSWORD']
+EMAIL_USE_TLS = True
+EMAIL_SENDER_ADDRESS = os.environ['EMAIL_SENDER_ADDRESS']

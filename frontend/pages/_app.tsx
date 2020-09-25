@@ -3,6 +3,9 @@ import { AppProps } from "next/app";
 import Head from "next/head";
 import "whatwg-fetch"; // polyfills window.fetch
 import { AuthProvider } from "../utils/AuthProvider";
+import Footer from "../components/Footer";
+import Main from "../components/Main";
+import TitleBar from "../components/TitleBar";
 
 const App: React.FC<AppProps> = ({ Component, pageProps }) => {
   return (
@@ -11,17 +14,17 @@ const App: React.FC<AppProps> = ({ Component, pageProps }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div>
-        <main className="p-2 border border-gray-500 bg-white md:mb-20">
-          <h1 className="italic text-center text-3xl tracking-tighter">
-            Warna - Warni - Days
-          </h1>
-        </main>
+      <AuthProvider>
+        <div className="min-h-screen relative pb-24">
+          <TitleBar />
 
-        <AuthProvider>
-          <Component {...pageProps} />
-        </AuthProvider>
-      </div>
+          <Main>
+            <Component {...pageProps} />
+          </Main>
+
+          <Footer />
+        </div>
+      </AuthProvider>
     </>
   );
 };

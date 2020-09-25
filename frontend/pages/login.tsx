@@ -1,6 +1,7 @@
 import Head from "next/head";
-import React, { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/router";
+import React, { useState } from "react";
 import { loginToServer } from "../utils/auth";
 
 const Login: React.FC<{}> = () => {
@@ -28,75 +29,74 @@ const Login: React.FC<{}> = () => {
   return (
     <>
       <Head>
-        <title>Login page </title>
+        <title>Login</title>
       </Head>
 
-      <form className="form" onSubmit={onLoginFormSubmit}>
-        <h2 className="text-3xl text-center mb-4">Welcome!</h2>
+      <form className="text-center" onSubmit={onLoginFormSubmit}>
+        <h2 className="main-title">Welcome back!</h2>
 
-        <p className="mb-4">Fill in the form to login with your credentials:</p>
+        <p className="mb-4">Fill in the form to login with your credentials.</p>
+
+        <Link href="/reset-password">
+          <a className="ml-4 font-bold mixed-feeling clickable hover:underline">
+            (forgot your password? Click here to reset it)
+          </a>
+        </Link>
 
         <div className="md:grid md:grid-cols-2 p-6">
           <div>
-            <div className="input-group">
-              <label className="input-label" htmlFor="username">
-                Username
-              </label>
+            <label className="input-label" htmlFor="username">
+              Username
+            </label>
 
-              <input
-                className="input-field"
-                id="username"
-                type="text"
-                placeholder="Username"
-                name="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-            </div>
+            <input
+              className="input-field"
+              id="username"
+              type="text"
+              placeholder="Username"
+              name="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
           </div>
 
           <div>
-            <div className="input-group">
-              <label className="input-label" htmlFor="password">
-                Password
-              </label>
+            <label className="input-label" htmlFor="password">
+              Password
+            </label>
 
-              <input
-                className="input-field"
-                id="password"
-                type="password"
-                placeholder="***"
-                name="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
+            <input
+              className="input-field"
+              id="password"
+              type="password"
+              placeholder="***"
+              name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </div>
         </div>
 
-        {error && <p className="text-red-600 text-xl">{error}</p>}
+        {error && <p className="bad-feeling text-xl">{error}</p>}
 
         <button
-          className="form-submit"
+          className="big positive-feeling"
           type="submit"
           disabled={queryInProgress}
         >
           {queryInProgress ? "loading..." : "Log me in"}
         </button>
 
-        <p>
-          <a
-            className="inline-block align-baseline font-bold text-sm text-orange-500 hover:text-orange-700"
-            href="#"
-          >
-            Forgot your password? Click here to reset it.
-          </a>
-        </p>
+        <div className="mt-6">
+          <Link href="/signup">
+            <a className="font-bold text-xl positive-feeling clickable hover:underline">
+              No account? Click here to create one.
+            </a>
+          </Link>
+        </div>
       </form>
-
-      <footer className="w-full text-center text-md">Hello World!</footer>
     </>
   );
 };

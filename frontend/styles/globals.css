@@ -12,50 +12,82 @@ html {
   @apply bg-gradient-to-tr from-blue-200 to-orange-200 min-h-screen;
 }
 
-.input-field {
+.main-title {
+  @apply text-3xl text-center mb-12 pb-2 border-b border-gray-300 w-3/4 mx-auto;
+}
+
+input {
   @apply border border-gray-500 p-2 w-3/4;
 }
 
-.input-field.invalid {
+.input-label {
+  @apply text-lg block text-center pt-4 pb-2 mt-6;
+}
+
+button.medium {
+  @apply font-bold py-2 px-4 mt-6 mb-4;
+}
+
+button.big {
+  @apply text-lg font-bold py-4 px-8 mt-6 mb-4;
+}
+
+input.bad-feeling {
   @apply border-red-600;
 }
 
-.input-error {
+.bad-feeling {
   @apply text-red-600;
 }
 
-.input-label {
-  @apply text-lg block text-center pt-4 pb-2;
-}
+button.bad-feeling {
+  @apply bg-red-600 border border-red-800 text-white;
 
-.input-group {
-  @apply m-2 my-6;
-}
+  &:hover {
+    @apply bg-red-400;
+  }
 
-.form {
-  @apply m-auto bg-white border shadow-xs border-gray-400 p-6 text-center;
-}
-
-@screen sm {
-  .form {
-    @apply max-w-3xl;
+  &:disabled {
+    @apply cursor-not-allowed bg-red-300;
   }
 }
 
-@screen lg {
-  .form {
-    @apply max-w-6xl;
+.positive-feeling {
+  @apply text-green-600;
+}
+
+.clickable.positive-feeling:hover {
+  @apply text-green-500;
+}
+
+button.positive-feeling {
+  @apply bg-green-600 border border-green-800 text-white;
+
+  &:hover {
+    @apply bg-green-500;
+  }
+
+  &:disabled {
+    @apply cursor-not-allowed bg-green-400;
   }
 }
 
-.form-submit {
-  @apply bg-green-600 border border-green-800 text-white text-lg font-bold py-4 px-8 mt-6 mb-4;
+.mixed-feeling {
+  @apply text-orange-500;
 }
 
-.form-submit:hover {
-  @apply bg-green-500;
+.clickable.mixed-feeling:hover {
+  @apply text-orange-700;
 }
 
-.form-submit:disabled {
-  @apply cursor-not-allowed bg-green-400;
+button.mixed-feeling {
+  @apply bg-orange-500 border-orange-800 text-white;
+
+  &:hover {
+    @apply bg-orange-400;
+  }
+
+  &:disabled {
+    @apply cursor-not-allowed bg-orange-300;
+  }
 }
