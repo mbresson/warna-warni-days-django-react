@@ -2,7 +2,7 @@ import "../styles/globals.css";
 import { AppProps } from "next/app";
 import Head from "next/head";
 import "whatwg-fetch"; // polyfills window.fetch
-import { AuthProvider } from "../utils/AuthProvider";
+import { AuthProvider } from "../common/AuthProvider";
 import Footer from "../components/Footer";
 import Main from "../components/Main";
 import TitleBar from "../components/TitleBar";

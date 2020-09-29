@@ -2,7 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { loginToServer } from "../utils/auth";
+import { loginToServer } from "../common/auth";
 
 const Login: React.FC<{}> = () => {
   const [username, setUsername] = useState("");

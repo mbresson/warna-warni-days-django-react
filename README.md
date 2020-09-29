@@ -16,6 +16,18 @@ The project is fully containerized with docker. If you have docker and docker-co
 
 Both backend and frontend will automatically reload whenever you edit the API server code (api-server/) and the React code (frontend/).
 
+## Testing
+
+In order to launch the tests, the containers must be started.
+
+### Backend tests
+
+`docker-compose -f docker-compose.dev.yml exec api-server python manage.py test`
+
+### Frontend tests
+
+`docker-compose -f docker-compose.dev.yml exec frontend npm test`
+
 ## Tech stack
 
 This project is build with the following technologies:

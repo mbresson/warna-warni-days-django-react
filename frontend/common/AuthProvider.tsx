@@ -1,21 +1,21 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
-type AuthStateAuthenticated = {
+export type AuthStateAuthenticated = {
   state: "authenticated";
   username: string;
   email: string;
 };
 
-type AuthStateUnauthenticated = {
+export type AuthStateUnauthenticated = {
   state: "unauthenticated";
 };
 
-type AuthStateLoading = {
+export type AuthStateLoading = {
   state: "loading";
 };
 
-type AuthState =
+export type AuthState =
   | AuthStateAuthenticated
   | AuthStateUnauthenticated
   | AuthStateLoading;
@@ -82,6 +82,10 @@ export const AuthProvider = ({ children }) => {
       events.off("routeChangeStart", handleRouteChange);
     };
   }, [user]);
+
+  if (user.state == "loading") {
+    return null;
+  }
 
   return (
     <AuthContext.Provider value={{ ...user }}>{children}</AuthContext.Provider>

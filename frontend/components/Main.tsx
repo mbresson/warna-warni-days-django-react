@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import React from "react";
-import { useAuth } from "../utils/AuthProvider";
-import { logoutFromServer } from "../utils/auth";
+import { useAuth } from "../common/AuthProvider";
+import { logoutFromServer } from "../common/auth";
 
 const Main: React.FC<{}> = ({ children }) => {
   const auth = useAuth();
