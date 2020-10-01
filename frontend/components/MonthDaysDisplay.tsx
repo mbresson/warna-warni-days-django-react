@@ -1,82 +1,98 @@
 import React from "react";
 
-import { Day } from "../common/types";
+import { DateYYYYMMDD, DayData } from "../common/types";
 import {
+  datePlusOneWeek,
+  findFirstDayInFirstWeekOfMonth,
   Month1To12,
-  findSundayInFirstWeekOfMonth,
-  findLastSundayInMonth,
+  toLocalYYYYMMDD,
 } from "../common/dateutils";
+import { Day } from "./Day";
+
+const WEEKDAYS_SHORT_LONG = [
+  ["Sun", "Sunday"],
+  ["Mon", "Monday"],
+  ["Tue", "Tuesday"],
+  ["Wed", "Wednesday"],
+  ["Thu", "Thursday"],
+  ["Fri", "Friday"],
+  ["Sat", "Saturday"],
+];
+
+const ONE_SEVENTH = `${100 / 7}%`;
+
+const enumerateWeeksDaysInMonth = (
+  firstSunday: Date,
+  month: Month1To12
+): DateYYYYMMDD[][] => {
+  const weeks: DateYYYYMMDD[][] = [];
+
+  for (
+    let sunday = firstSunday;
+    sunday.getMonth() < month;
+    sunday = datePlusOneWeek(sunday)
+  ) {
+    const weekDays: DateYYYYMMDD[] = [];
+
+    for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
+      const day = new Date(
+        sunday.getFullYear(),
+        sunday.getMonth(),
+        sunday.getDate() + dayOffset
+      );
+
+      weekDays.push(toLocalYYYYMMDD(day));
+    }
+
+    weeks.push(weekDays);
+  }
+
+  return weeks;
+};
 
 type Properties = {
-  allUserDays: Day[];
+  allUserDays: DayData[];
   month: Month1To12;
   year: number;
 };
 
 const MonthDaysDisplay: React.FC<Properties> = (props) => {
-  const sundayOfFirstWeek = findSundayInFirstWeekOfMonth(
-    props.year,
-    props.month
-  );
-  const lastSundayInMonth = findLastSundayInMonth(props.year, props.month);
+  const firstSunday = findFirstDayInFirstWeekOfMonth(props.year, props.month);
 
   const dateToColor = {};
   for (let day of props.allUserDays) {
     dateToColor[day.date] = day.color;
   }
 
-  const weeks: string[][] = [];
+  const weeks = enumerateWeeksDaysInMonth(firstSunday, props.month);
 
-  for (
-    let sunday = sundayOfFirstWeek;
-    sunday.getTime() != lastSundayInMonth.getTime();
-    sunday = new Date(
-      sunday.getFullYear(),
-      sunday.getMonth(),
-      sunday.getDate() + 7
-    )
-  ) {
-    const week: string[] = [];
-    for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
-      const day = new Date(
-        sunday.getFullYear(),
-        sunday.getMonth(),
-        sunday.getDate() + dayIndex
-      );
+  const today = toLocalYYYYMMDD(new Date());
 
-      const dayKey = day.toISOString().substr(0, 10);
-
-      week.push(dayKey);
-    }
-    weeks.push(week);
-  }
-
-  // loop, week = tr
   return (
-    <table>
+    <table className="w-full border-separate">
       <thead>
-        <tr>
-          <th>Monday</th>
-          <th>Tuesday</th>
-          <th>Wednesday</th>
-          <th>Thursday</th>
-          <th>Friday</th>
-          <th>Saturday</th>
-          <th>Sunday</th>
+        <tr className="small-caps text-gray-900">
+          {WEEKDAYS_SHORT_LONG.map(([short, long]) => (
+            <th style={{ width: ONE_SEVENTH }} key={short}>
+              <span className="lg:hidden">{short}</span>
+              <span className="hidden lg:inline">{long}</span>
+            </th>
+          ))}
         </tr>
       </thead>
       <tbody>
         {weeks.map((week, weekIndex) => (
-          <tr key={weekIndex}>
+          <tr key={weekIndex} style={{ boxShadow: "0 -1px #EEE" }}>
             {week.map((dayKey, dayIndex) => (
               <td key={dayIndex}>
-                {dateToColor[dayKey] ? (
-                  <div style={{ color: dateToColor[dayKey] }}>
-                    {dateToColor[dayKey]}
-                  </div>
-                ) : (
-                  "NO DAY"
-                )}
+                <div
+                  className={
+                    "cursor-pointer border-transparent border-2 hover:border-solid hover:border-gray-900  " +
+                    (today == dayKey ? " border-dashed border-gray-900" : "")
+                  }
+                >
+                  <Day date={dayKey} color={dateToColor[dayKey]} />
+                </div>
               </td>
             ))}
           </tr>

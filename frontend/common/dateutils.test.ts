@@ -1,6 +1,7 @@
 import {
-  findSundayInFirstWeekOfMonth,
-  findLastSundayInMonth,
+  datePlusOneWeek,
+  findFirstDayInFirstWeekOfMonth,
+  toLocalYYYYMMDD,
 } from "./dateutils";
 
 enum Months {
@@ -18,18 +19,30 @@ enum Months {
   December,
 }
 
-const toYYYYMMDD = (date: Date): string => {
-  return date.toISOString().substr(0, 10);
-};
+describe("datePlusOneWeek", () => {
+  test("finds the date for the same weekday one week later", () => {
+    const datesToExpectedDatePlus1Week: [Date, string][] = [
+      [new Date(2020, 8, 29), "2020-10-06"],
+      [new Date(2020, 11, 31), "2021-01-07"],
+      [new Date(2020, 9, 8), "2020-10-15"],
+    ];
 
-describe("findSundayInFirstWeekOfMonth", () => {
+    for (let [date, expectedDatePlus1Week] of datesToExpectedDatePlus1Week) {
+      const datePlus1Week = datePlusOneWeek(date);
+
+      expect(toLocalYYYYMMDD(datePlus1Week)).toEqual(expectedDatePlus1Week);
+    }
+  });
+});
+
+describe("findFirstDayInFirstWeekOfMonth", () => {
   test("finds 01/MM/YYYY when the first day of the month is exactly Sunday", () => {
     // 1st March 2020 is a Sunday
-    const dateOfSunday = findSundayInFirstWeekOfMonth(2020, Months.March);
+    const dateOfSunday = findFirstDayInFirstWeekOfMonth(2020, Months.March);
 
     const expectedDate = "2020-03-01";
 
-    expect(toYYYYMMDD(dateOfSunday)).toEqual(expectedDate);
+    expect(toLocalYYYYMMDD(dateOfSunday)).toEqual(expectedDate);
   });
 
   test("finds DD/(MM-1)/YYYY when the first day of the month is not Sunday", () => {
@@ -40,34 +53,24 @@ describe("findSundayInFirstWeekOfMonth", () => {
     ];
 
     for (let [year, month, expectedDate] of yearsMonthsToExpectedDate) {
-      const dateOfSunday = findSundayInFirstWeekOfMonth(year, month);
+      const dateOfSunday = findFirstDayInFirstWeekOfMonth(year, month);
 
-      expect(toYYYYMMDD(dateOfSunday)).toEqual(expectedDate);
+      expect(toLocalYYYYMMDD(dateOfSunday)).toEqual(expectedDate);
     }
   });
 });
 
-describe("findLastSundayInMonth", () => {
-  test("finds (last day in month)/MM/YYYY when the last day of the month is exactly Sunday", () => {
-    // 31st May 2020 is a Sunday
-    const dateOfSunday = findLastSundayInMonth(2020, Months.May);
-
-    const expectedDate = "2020-05-31";
-
-    expect(toYYYYMMDD(dateOfSunday)).toEqual(expectedDate);
-  });
-
-  test("finds DD/MM/YYYY when the last day of the month is not Sunday", () => {
-    const yearsMonthsToExpectedDate: [number, number, string][] = [
-      [2020, Months.October, "2020-10-25"], // 31st October 2020 = Saturday
-      [2020, Months.November, "2020-11-29"], // 30st November 2020 = Monday
-      [2020, Months.December, "2020-12-27"], // 31st December 2020 = Thursday
+describe("toLocalYYYYMMDD", () => {
+  test("formats date as YYYY-MM-DD, local time", () => {
+    const datesToExpectedYYYYMMDD: [Date, string][] = [
+      [new Date(2012, 11, 31), "2012-12-31"],
+      [new Date(2020, 0, 1), "2020-01-01"],
     ];
 
-    for (let [year, month, expectedDate] of yearsMonthsToExpectedDate) {
-      const dateOfSunday = findLastSundayInMonth(year, month);
+    for (let [date, expectedYYYYMMDD] of datesToExpectedYYYYMMDD) {
+      const yyyyMMDD = toLocalYYYYMMDD(date);
 
-      expect(toYYYYMMDD(dateOfSunday)).toEqual(expectedDate);
+      expect(yyyyMMDD).toEqual(expectedYYYYMMDD);
     }
   });
 });

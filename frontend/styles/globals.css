@@ -16,6 +16,10 @@ html {
   @apply text-3xl text-center mb-12 pb-2 border-b border-gray-300 w-3/4 mx-auto;
 }
 
+.small-caps {
+  font-variant: small-caps;
+}
+
 input {
   @apply border border-gray-500 p-2 w-3/4;
 }
