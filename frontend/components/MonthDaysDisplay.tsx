@@ -6,18 +6,9 @@ import {
   findFirstDayInFirstWeekOfMonth,
   Month1To12,
   toLocalYYYYMMDD,
+  SORTED_WEEKDAYS_SHORT_LONG,
 } from "../common/dateutils";
 import { Day } from "./Day";
-
-const WEEKDAYS_SHORT_LONG = [
-  ["Sun", "Sunday"],
-  ["Mon", "Monday"],
-  ["Tue", "Tuesday"],
-  ["Wed", "Wednesday"],
-  ["Thu", "Thursday"],
-  ["Fri", "Friday"],
-  ["Sat", "Saturday"],
-];
 
 const ONE_SEVENTH = `${100 / 7}%`;
 
@@ -51,18 +42,13 @@ const enumerateWeeksDaysInMonth = (
 };
 
 type Properties = {
-  allUserDays: DayData[];
+  allUserDays: Record<DateYYYYMMDD, DayData>;
   month: Month1To12;
   year: number;
 };
 
 const MonthDaysDisplay: React.FC<Properties> = (props) => {
   const firstSunday = findFirstDayInFirstWeekOfMonth(props.year, props.month);
-
-  const dateToColor = {};
-  for (let day of props.allUserDays) {
-    dateToColor[day.date] = day.color;
-  }
 
   const weeks = enumerateWeeksDaysInMonth(firstSunday, props.month);
 
@@ -72,7 +58,7 @@ const MonthDaysDisplay: React.FC<Properties> = (props) => {
     <table className="w-full border-separate">
       <thead>
         <tr className="small-caps text-gray-900">
-          {WEEKDAYS_SHORT_LONG.map(([short, long]) => (
+          {SORTED_WEEKDAYS_SHORT_LONG.map(([short, long]) => (
             <th style={{ width: ONE_SEVENTH }} key={short}>
               <span className="lg:hidden">{short}</span>
               <span className="hidden lg:inline">{long}</span>
@@ -91,7 +77,7 @@ const MonthDaysDisplay: React.FC<Properties> = (props) => {
                     (today == dayKey ? " border-dashed border-gray-900" : "")
                   }
                 >
-                  <Day date={dayKey} color={dateToColor[dayKey]} />
+                  <Day date={dayKey} day={props.allUserDays[dayKey]} />
                 </div>
               </td>
             ))}

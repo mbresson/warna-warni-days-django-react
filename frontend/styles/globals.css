@@ -12,6 +12,10 @@ html {
   @apply bg-gradient-to-tr from-blue-200 to-orange-200 min-h-screen;
 }
 
+button:focus {
+  outline: none;
+}
+
 .main-title {
   @apply text-3xl text-center mb-12 pb-2 border-b border-gray-300 w-3/4 mx-auto;
 }
@@ -20,8 +24,9 @@ html {
   font-variant: small-caps;
 }
 
-input {
-  @apply border border-gray-500 p-2 w-3/4;
+input,
+select {
+  @apply border border-gray-500 p-2 w-3/4 bg-white;
 }
 
 .input-label {
@@ -85,7 +90,7 @@ button.positive-feeling {
 }
 
 button.mixed-feeling {
-  @apply bg-orange-500 border-orange-800 text-white;
+  @apply bg-orange-500 border border-orange-800 text-white;
 
   &:hover {
     @apply bg-orange-400;
@@ -93,5 +98,27 @@ button.mixed-feeling {
 
   &:disabled {
     @apply cursor-not-allowed bg-orange-300;
+  }
+}
+
+.choice-group {
+  & > button {
+    @apply px-4;
+  }
+
+  & > button.choice {
+    @apply bg-gray-100 border border-gray-400;
+
+    &:hover {
+      @apply bg-blue-500 border-blue-600 text-white;
+    }
+  }
+
+  & > button.choice.active {
+    @apply bg-blue-600 border-blue-700 text-white;
+
+    &:hover {
+      @apply bg-blue-600 text-white;
+    }
   }
 }

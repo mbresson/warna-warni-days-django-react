@@ -1,5 +1,5 @@
 import React from "react";
-import { DateYYYYMMDD, HexRRGGBB } from "../common/types";
+import { DateYYYYMMDD, DayData } from "../common/types";
 import { hexToRGB, computeBrightness, Brightness } from "../common/colorutils";
 
 const EmptyDay: React.FC<{ monthDay: number }> = ({ monthDay }) => {
@@ -12,12 +12,12 @@ const EmptyDay: React.FC<{ monthDay: number }> = ({ monthDay }) => {
   );
 };
 
-const FilledDay: React.FC<{ monthDay: number; color: HexRRGGBB }> = (props) => {
-  const brightness = computeBrightness(hexToRGB(props.color));
+const FilledDay: React.FC<{ monthDay: number; day: DayData }> = (props) => {
+  const brightness = computeBrightness(hexToRGB(props.day.color));
 
   return (
     <div
-      style={{ background: props.color }}
+      style={{ background: props.day.color }}
       className="py-1 px-2 lg:py-4 lg:px-5 mx-auto table text-2xl rounded-full border-2 border-gray-200 "
     >
       <div
@@ -32,14 +32,12 @@ const FilledDay: React.FC<{ monthDay: number; color: HexRRGGBB }> = (props) => {
   );
 };
 
-export const Day: React.FC<{ date: DateYYYYMMDD; color?: HexRRGGBB }> = (
-  props
-) => {
-  const day = parseInt(props.date.substring(8), 10);
+export const Day: React.FC<{ date: DateYYYYMMDD; day?: DayData }> = (props) => {
+  const monthDay = parseInt(props.date.substring(8), 10);
 
-  if (!props.color) {
-    return <EmptyDay monthDay={day} />;
+  if (!props.day) {
+    return <EmptyDay monthDay={monthDay} />;
   }
 
-  return <FilledDay color={props.color} monthDay={day} />;
+  return <FilledDay day={props.day} monthDay={monthDay} />;
 };

@@ -27,3 +27,13 @@ export const toLocalYYYYMMDD = (date: Date): string => {
     formatAs0D(date.getDate())
   );
 };
+
+export const SORTED_WEEKDAYS_SHORT_LONG = [
+  ["Sun", "Sunday"],
+  ["Mon", "Monday"],
+  ["Tue", "Tuesday"],
+  ["Wed", "Wednesday"],
+  ["Thu", "Thursday"],
+  ["Fri", "Friday"],
+  ["Sat", "Saturday"],
+];
