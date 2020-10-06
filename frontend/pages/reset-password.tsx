@@ -84,7 +84,7 @@ const ResetPasswordPage: React.FC<{}> = () => {
 
         {response == null && (
           <button
-            className="big mixed-feeling"
+            className="big mt-6 mixed-feeling"
             type="submit"
             disabled={queryInProgress}
           >

@@ -82,7 +82,7 @@ const Login: React.FC<{}> = () => {
         {error && <p className="bad-feeling text-xl">{error}</p>}
 
         <button
-          className="big positive-feeling"
+          className="big mt-6 positive-feeling"
           type="submit"
           disabled={queryInProgress}
         >

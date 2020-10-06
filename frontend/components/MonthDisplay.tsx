@@ -5,22 +5,25 @@ import {
   datePlusOneWeek,
   findFirstDayInFirstWeekOfMonth,
   Month1To12,
-  toLocalYYYYMMDD,
+  dateToLocalYYYYMMDD,
   SORTED_WEEKDAYS_SHORT_LONG,
 } from "../common/dateutils";
-import { Day } from "./Day";
+import { DayCircle } from "./DayCircle";
 
 const ONE_SEVENTH = `${100 / 7}%`;
 
 const enumerateWeeksDaysInMonth = (
   firstSunday: Date,
-  month: Month1To12
+  month: Month1To12,
+  year: number
 ): DateYYYYMMDD[][] => {
   const weeks: DateYYYYMMDD[][] = [];
 
+  const endDate = new Date(year, month, 1);
+
   for (
     let sunday = firstSunday;
-    sunday.getMonth() < month;
+    sunday.getTime() < endDate.getTime();
     sunday = datePlusOneWeek(sunday)
   ) {
     const weekDays: DateYYYYMMDD[] = [];
@@ -32,7 +35,7 @@ const enumerateWeeksDaysInMonth = (
         sunday.getDate() + dayOffset
       );
 
-      weekDays.push(toLocalYYYYMMDD(day));
+      weekDays.push(dateToLocalYYYYMMDD(day));
     }
 
     weeks.push(weekDays);
@@ -45,14 +48,19 @@ type Properties = {
   allUserDays: Record<DateYYYYMMDD, DayData>;
   month: Month1To12;
   year: number;
+  today: Date;
 };
 
-const MonthDaysDisplay: React.FC<Properties> = (props) => {
+const MonthDisplay: React.FC<Properties> = (props) => {
   const firstSunday = findFirstDayInFirstWeekOfMonth(props.year, props.month);
 
-  const weeks = enumerateWeeksDaysInMonth(firstSunday, props.month);
+  const weeks = enumerateWeeksDaysInMonth(firstSunday, props.month, props.year);
 
-  const today = toLocalYYYYMMDD(new Date());
+  const today = dateToLocalYYYYMMDD(props.today);
+
+  const monthPrefix = dateToLocalYYYYMMDD(
+    new Date(props.year, props.month - 1, 1)
+  ).substr(0, 7);
 
   return (
     <table className="w-full border-separate">
@@ -71,14 +79,20 @@ const MonthDaysDisplay: React.FC<Properties> = (props) => {
           <tr key={weekIndex} style={{ boxShadow: "0 -1px #EEE" }}>
             {week.map((dayKey, dayIndex) => (
               <td key={dayIndex}>
-                <div
-                  className={
-                    "cursor-pointer border-transparent border-2 hover:border-solid hover:border-gray-900  " +
-                    (today == dayKey ? " border-dashed border-gray-900" : "")
-                  }
-                >
-                  <Day date={dayKey} day={props.allUserDays[dayKey]} />
-                </div>
+                {dayKey.startsWith(monthPrefix) ? (
+                  <div
+                    className={
+                      "cursor-pointer border-transparent border-2 hover:border-solid hover:border-gray-900  " +
+                      (today == dayKey ? " border-dashed border-gray-900" : "")
+                    }
+                  >
+                    <DayCircle date={dayKey} day={props.allUserDays[dayKey]} />
+                  </div>
+                ) : (
+                  <div>
+                    <DayCircle date={dayKey} disabled />
+                  </div>
+                )}
               </td>
             ))}
           </tr>
@@ -88,4 +102,4 @@ const MonthDaysDisplay: React.FC<Properties> = (props) => {
   );
 };
 
-export default MonthDaysDisplay;
+export default MonthDisplay;

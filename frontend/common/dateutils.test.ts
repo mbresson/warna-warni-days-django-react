@@ -1,7 +1,8 @@
 import {
   datePlusOneWeek,
   findFirstDayInFirstWeekOfMonth,
-  toLocalYYYYMMDD,
+  dateToLocalYYYYMMDD,
+  yyyyMMDDToDate,
 } from "./dateutils";
 
 enum Months {
@@ -30,7 +31,7 @@ describe("datePlusOneWeek", () => {
     for (let [date, expectedDatePlus1Week] of datesToExpectedDatePlus1Week) {
       const datePlus1Week = datePlusOneWeek(date);
 
-      expect(toLocalYYYYMMDD(datePlus1Week)).toEqual(expectedDatePlus1Week);
+      expect(dateToLocalYYYYMMDD(datePlus1Week)).toEqual(expectedDatePlus1Week);
     }
   });
 });
@@ -42,7 +43,7 @@ describe("findFirstDayInFirstWeekOfMonth", () => {
 
     const expectedDate = "2020-03-01";
 
-    expect(toLocalYYYYMMDD(dateOfSunday)).toEqual(expectedDate);
+    expect(dateToLocalYYYYMMDD(dateOfSunday)).toEqual(expectedDate);
   });
 
   test("finds DD/(MM-1)/YYYY when the first day of the month is not Sunday", () => {
@@ -55,12 +56,12 @@ describe("findFirstDayInFirstWeekOfMonth", () => {
     for (let [year, month, expectedDate] of yearsMonthsToExpectedDate) {
       const dateOfSunday = findFirstDayInFirstWeekOfMonth(year, month);
 
-      expect(toLocalYYYYMMDD(dateOfSunday)).toEqual(expectedDate);
+      expect(dateToLocalYYYYMMDD(dateOfSunday)).toEqual(expectedDate);
     }
   });
 });
 
-describe("toLocalYYYYMMDD", () => {
+describe("dateToLocalYYYYMMDD", () => {
   test("formats date as YYYY-MM-DD, local time", () => {
     const datesToExpectedYYYYMMDD: [Date, string][] = [
       [new Date(2012, 11, 31), "2012-12-31"],
@@ -68,9 +69,24 @@ describe("toLocalYYYYMMDD", () => {
     ];
 
     for (let [date, expectedYYYYMMDD] of datesToExpectedYYYYMMDD) {
-      const yyyyMMDD = toLocalYYYYMMDD(date);
+      const yyyyMMDD = dateToLocalYYYYMMDD(date);
 
       expect(yyyyMMDD).toEqual(expectedYYYYMMDD);
+    }
+  });
+});
+
+describe("yyyyMMDDToDate", () => {
+  test("parses YYYY-MM-DD format to date, local time", () => {
+    const yyyyMMDDToExpectedDates: [string, Date][] = [
+      ["2012-12-31", new Date(2012, 11, 31)],
+      ["2020-01-01", new Date(2020, 0, 1)],
+    ];
+
+    for (let [yyyyMMDD, expectedDate] of yyyyMMDDToExpectedDates) {
+      const date = yyyyMMDDToDate(yyyyMMDD);
+
+      expect(date.getTime()).toEqual(expectedDate.getTime());
     }
   });
 });

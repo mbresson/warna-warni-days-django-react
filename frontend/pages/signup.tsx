@@ -163,7 +163,7 @@ const Signup: React.FC<{}> = () => {
 
         {!errors.internalError && (
           <button
-            className="big positive-feeling"
+            className="big mt-6 positive-feeling"
             type="submit"
             disabled={queryInProgress}
           >

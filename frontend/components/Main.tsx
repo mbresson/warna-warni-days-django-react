@@ -13,8 +13,10 @@ const Main: React.FC<{}> = ({ children }) => {
   };
 
   return (
-    <main className="mt-10 mx-2 lg:mx-auto lg:max-w-6xl border border-gray-500 bg-white p-6 ">
-      {children}
+    <>
+      <main className="mt-10 mx-1 sm:mx-2 lg:mx-auto lg:max-w-6xl border border-gray-500 bg-white p-1 sm:p-6 ">
+        {children}
+      </main>
 
       {auth.state == "authenticated" && (
         <button
@@ -24,7 +26,7 @@ const Main: React.FC<{}> = ({ children }) => {
           Logout
         </button>
       )}
-    </main>
+    </>
   );
 };
 
