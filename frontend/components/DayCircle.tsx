@@ -7,7 +7,7 @@ const EmptyDay: React.FC<{ monthDay: number; disabled: boolean }> = ({
   disabled,
 }) => {
   return (
-    <div className="px-1 sm:py-1 sm:px-2 lg:py-4 lg:px-5 mx-auto table text-xl sm:text-2xl">
+    <div className="px-1 sm:py-1 sm:px-2 lg:py-4 lg:px-5 mx-auto table text-xl sm:text-2xl  border-2 border-transparent">
       <div
         className={
           "align-middle italic table-cell text-center " +
