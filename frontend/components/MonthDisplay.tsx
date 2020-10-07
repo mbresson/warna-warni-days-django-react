@@ -7,7 +7,7 @@ import {
   Month1To12,
   dateToLocalYYYYMMDD,
   SORTED_WEEKDAYS_SHORT_LONG,
-} from "../common/dateutils";
+} from "../common/utils/dateutils";
 import { DayCircle } from "./DayCircle";
 
 const ONE_SEVENTH = `${100 / 7}%`;

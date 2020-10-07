@@ -1,4 +1,4 @@
-import { DateYYYYMMDD } from "./types";
+import { DateYYYYMMDD } from "../types";
 
 export type Month1To12 = number;
 

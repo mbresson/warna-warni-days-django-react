@@ -1,6 +1,6 @@
 import React from "react";
 
-import { SORTED_MONTHS, Month1To12 } from "../common/dateutils";
+import { SORTED_MONTHS, Month1To12 } from "../common/utils/dateutils";
 
 const enumerateMonthOptions = (
   startDate: Date,

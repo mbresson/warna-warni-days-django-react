@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { useAuth } from "../common/AuthProvider";
-import { logoutFromServer } from "../common/auth";
+import { logoutFromServer } from "../common/apis/auth";
 
 const TitleBar: React.FC<{}> = () => {
   const auth = useAuth();

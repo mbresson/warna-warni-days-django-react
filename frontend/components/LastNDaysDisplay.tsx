@@ -4,7 +4,7 @@ import { DateYYYYMMDD, DayData } from "../common/types";
 import {
   dateToLocalYYYYMMDD,
   SORTED_WEEKDAYS_SHORT_LONG,
-} from "../common/dateutils";
+} from "../common/utils/dateutils";
 import { DayTile } from "./DayTile";
 
 const enumerateLastNDatesDescOrder = (endDate: Date, n: number): Date[] => {

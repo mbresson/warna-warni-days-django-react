@@ -2,7 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { signUpToServer } from "../common/auth";
+import { signUpToServer } from "../common/apis/auth";
 
 type SignupErrors = {
   username?: string[];

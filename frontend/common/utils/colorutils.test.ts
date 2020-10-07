@@ -1,4 +1,4 @@
-import { HexRRGGBB } from "./types";
+import { HexRRGGBB } from "../types";
 
 import { Brightness, computeBrightness, hexToRGB, RGB } from "./colorutils";
 

@@ -1,26 +1,27 @@
 import Head from "next/head";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useAuth, AuthStateAuthenticated } from "../common/AuthProvider";
 import MonthDisplay from "../components/MonthDisplay";
 import MonthDisplayControls from "../components/MonthDisplayControls";
 import LastNDaysDisplay from "../components/LastNDaysDisplay";
 import { DateYYYYMMDD, DayData } from "../common/types";
+import { getDays } from "../common/apis/days";
 import {
   dateToLocalYYYYMMDD,
   Month1To12,
   yyyyMMDDToDate,
-} from "../common/dateutils";
-
-const getDays = async (username: string): Promise<[DayData]> => {
-  const response = await fetch(`/api/users/${username}/days/`);
-
-  return await response.json();
-};
+} from "../common/utils/dateutils";
+import { ParsedUrlQuery } from "querystring";
 
 enum DisplayModes {
   Month = "month display",
   LastTwoWeeks = "last two weeks",
 }
+
+const canonicalDisplayMode = (mode: DisplayModes): string => {
+  return mode.replace(/ /g, "-");
+};
 
 type DisplayModeMonth = {
   mode: DisplayModes.Month;
@@ -75,22 +76,48 @@ const DisplayModeControls: React.FC<{
   );
 };
 
+const displayModeFromQuery = (
+  query: ParsedUrlQuery,
+  currentMonth: Month1To12,
+  currentYear: number
+): DisplayMode => {
+  if (query.mode == canonicalDisplayMode(DisplayModes.LastTwoWeeks)) {
+    return {
+      mode: DisplayModes.LastTwoWeeks,
+    };
+  }
+
+  return {
+    mode: DisplayModes.Month,
+    month: currentMonth,
+    year: currentYear,
+  };
+};
+
+type DataStateReady = {
+  state: "ready";
+  days: Record<DateYYYYMMDD, DayData>;
+  firstDayDate: Date;
+};
+
+type DataStateLoading = {
+  state: "loading";
+};
+
+type DataState = DataStateReady | DataStateLoading;
+
 const Index: React.FC<{}> = () => {
   const today = new Date();
   const currentMonth: Month1To12 = today.getMonth() + 1;
   const currentYear = today.getFullYear();
 
+  const router = useRouter();
+
   const auth = useAuth() as AuthStateAuthenticated;
-  const [loading, setLoading] = useState<boolean>(true);
-  const [days, setDays] = useState<Record<DateYYYYMMDD, DayData>>({});
-  const [firstDate, setFirstDate] = useState<DateYYYYMMDD>(
-    dateToLocalYYYYMMDD(today)
+  const [data, setData] = useState<DataState>({ state: "loading" });
+  const [displayMode, setDisplayMode] = useState<DisplayMode>(
+    displayModeFromQuery(router.query, currentMonth, currentYear)
   );
-  const [displayMode, setDisplayMode] = useState<DisplayMode>({
-    mode: DisplayModes.Month,
-    month: currentMonth,
-    year: currentYear,
-  });
 
   useEffect(() => {
     getDays(auth.username).then((daysList) => {
@@ -104,13 +131,16 @@ const Index: React.FC<{}> = () => {
 
         daysByDate[day.date] = day;
       }
-      setDays(daysByDate);
-      setFirstDate(firstDateSoFar);
-      setLoading(false);
+
+      setData({
+        state: "ready",
+        days: daysByDate,
+        firstDayDate: yyyyMMDDToDate(firstDateSoFar),
+      });
     });
   }, []);
 
-  if (loading) {
+  if (data.state != "ready") {
     return null;
   }
 
@@ -127,7 +157,7 @@ const Index: React.FC<{}> = () => {
       {displayMode.mode == DisplayModes.Month ? (
         <>
           <MonthDisplayControls
-            startDate={yyyyMMDDToDate(firstDate)}
+            startDate={data.firstDayDate}
             endDate={today}
             selectedYear={displayMode.year}
             selectedMonth={displayMode.month}
@@ -141,7 +171,7 @@ const Index: React.FC<{}> = () => {
           />
 
           <MonthDisplay
-            allUserDays={days}
+            allUserDays={data.days}
             month={displayMode.month}
             year={displayMode.year}
             today={today}
@@ -149,7 +179,7 @@ const Index: React.FC<{}> = () => {
         </>
       ) : (
         <LastNDaysDisplay
-          allUserDays={days}
+          allUserDays={data.days}
           date={today}
           numDays={14}
           today={today}
@@ -160,7 +190,10 @@ const Index: React.FC<{}> = () => {
         displayMode={displayMode}
         currentMonth={currentMonth}
         currentYear={currentYear}
-        onChange={setDisplayMode}
+        onChange={(displayMode) => {
+          router.push("/?mode=" + canonicalDisplayMode(displayMode.mode));
+          setDisplayMode(displayMode);
+        }}
       />
     </>
   );
