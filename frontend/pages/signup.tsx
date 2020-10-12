@@ -2,7 +2,8 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { signUpToServer } from "../common/apis/auth";
+import { signUpToServer } from "../common/apis/account";
+import ErrorsList from "../components/ErrorsList";
 
 type SignupErrors = {
   username?: string[];
@@ -81,9 +82,7 @@ const Signup: React.FC<{}> = () => {
               required
             />
 
-            {errors.username && (
-              <p className="bad-feeling">{errors.username}</p>
-            )}
+            {errors.username && <ErrorsList errors={errors.username} />}
           </div>
 
           <div>
@@ -102,7 +101,7 @@ const Signup: React.FC<{}> = () => {
               required
             />
 
-            {errors.email && <p className="bad-feeling">{errors.email}</p>}
+            {errors.email && <ErrorsList errors={errors.email} />}
           </div>
 
           <div>
@@ -121,9 +120,7 @@ const Signup: React.FC<{}> = () => {
               required
             />
 
-            {errors.password && (
-              <p className="bad-feeling">{errors.password}</p>
-            )}
+            {errors.password && <ErrorsList errors={errors.password} />}
           </div>
 
           <div>
@@ -132,10 +129,7 @@ const Signup: React.FC<{}> = () => {
             </label>
 
             <input
-              className={
-                "input-field " +
-                (errors.passwordConfirmation ? "bad-feeling" : "")
-              }
+              className={errors.passwordConfirmation ? "bad-feeling" : ""}
               id="password2"
               type="password"
               placeholder="***"
@@ -146,7 +140,7 @@ const Signup: React.FC<{}> = () => {
             />
 
             {errors.passwordConfirmation && (
-              <p className="bad-feeling">{errors.passwordConfirmation}</p>
+              <ErrorsList errors={errors.passwordConfirmation} />
             )}
           </div>
         </div>
@@ -163,7 +157,7 @@ const Signup: React.FC<{}> = () => {
 
         {!errors.internalError && (
           <button
-            className="big mt-6 positive-feeling"
+            className="big mb-2 mt-6 positive-feeling"
             type="submit"
             disabled={queryInProgress}
           >

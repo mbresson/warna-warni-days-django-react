@@ -82,7 +82,7 @@ const MonthDisplayControls: React.FC<Properties> = (props) => {
   };
 
   return (
-    <div className="text-center mb-8 choice-group">
+    <div className="text-center mb-8 choice-group my-2">
       <button
         className="big choice"
         disabled={!previousMonthEnabled}

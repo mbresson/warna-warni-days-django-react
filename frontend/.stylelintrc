@@ -9,9 +9,10 @@
       ]
     }],
     "block-no-empty": null,
-    "unit-whitelist": [["em", "rem", "s"], {
+    "unit-whitelist": [["em", "rem", "s", "vh", "vw"], {
       "ignoreProperties": {
-       "px": ["box-shadow"]
+       "px": ["box-shadow"],
+       "%": ["top", "left", "transform"]
       }
     }]
   }

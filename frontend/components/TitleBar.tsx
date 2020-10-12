@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { useAuth } from "../common/AuthProvider";
-import { logoutFromServer } from "../common/apis/auth";
+import { logoutFromServer } from "../common/apis/account";
 
 const TitleBar: React.FC<{}> = () => {
   const auth = useAuth();
@@ -19,12 +19,17 @@ const TitleBar: React.FC<{}> = () => {
     <header className="p-2 border-b border-gray-300 bg-white">
       <div className="titlebar-inner m-auto px-2 lg:max-w-6xl">
         {loggedIn && (
-          <button
-            className="float-right bad-feeling hidden lg:block p-2"
-            onClick={logout}
-          >
-            Logout
-          </button>
+          <div className="float-right hidden lg:block">
+            <Link href="/settings">
+              <button className="medium choice mr-2">
+                <a>Settings</a>
+              </button>
+            </Link>
+
+            <button className="bad-feeling medium ml-2" onClick={logout}>
+              Logout
+            </button>
+          </div>
         )}
 
         <h1

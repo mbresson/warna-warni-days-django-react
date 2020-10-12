@@ -1,7 +1,8 @@
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { useAuth } from "../common/AuthProvider";
-import { logoutFromServer } from "../common/apis/auth";
+import { logoutFromServer } from "../common/apis/account";
 
 const Main: React.FC<{}> = ({ children }) => {
   const auth = useAuth();
@@ -19,12 +20,17 @@ const Main: React.FC<{}> = ({ children }) => {
       </main>
 
       {auth.state == "authenticated" && (
-        <button
-          className="medium bad-feeling block lg:hidden mt-8 mx-auto"
-          onClick={logout}
-        >
-          Logout
-        </button>
+        <div className="text-center lg:hidden mt-8 my-2">
+          <Link href="/settings">
+            <button className="big choice mr-2">
+              <a>Settings</a>
+            </button>
+          </Link>
+
+          <button className="big bad-feeling ml-2" onClick={logout}>
+            Logout
+          </button>
+        </div>
       )}
     </>
   );

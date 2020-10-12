@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import {
   PasswordResetResponse,
   requestPasswordResetFromServer,
-} from "../common/apis/auth";
+} from "../common/apis/account";
 
 const ResetPasswordPage: React.FC<{}> = () => {
   const [username, setUsername] = useState("");
@@ -43,7 +43,6 @@ const ResetPasswordPage: React.FC<{}> = () => {
             </label>
 
             <input
-              className="input-field"
               id="username"
               type="text"
               placeholder="Username"
@@ -84,7 +83,7 @@ const ResetPasswordPage: React.FC<{}> = () => {
 
         {response == null && (
           <button
-            className="big mt-6 mixed-feeling"
+            className="big mb-2 mt-6 mixed-feeling"
             type="submit"
             disabled={queryInProgress}
           >

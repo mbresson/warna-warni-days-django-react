@@ -1,4 +1,6 @@
-from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.contrib.auth import authenticate, login, logout, get_user_model, update_session_auth_hash
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from rest_framework import exceptions, permissions, response, status
 from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView
@@ -66,6 +68,39 @@ class ProfileView(APIView):
         return response.Response(serializer.data)
 
 
+class ChangePasswordView(APIView):
+    def post(self, request, format=None):
+        user = request.user
+
+        current_password = request.data['current_password']
+        new_password = request.data['new_password']
+
+        if not user.check_password(current_password):
+            return response.Response(
+                data={
+                    'current_password': ['Incorrect password'],
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            validate_password(new_password, user)
+        except ValidationError as errors:
+            return response.Response(
+                data={
+                    'new_password': errors
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user.set_password(new_password)
+        user.save()
+
+        update_session_auth_hash(request, user)
+
+        return response.Response(status=status.HTTP_200_OK)
+
+
 class ResetPasswordView(APIView):
     """
     This view will require the user's username and email address,
@@ -100,5 +135,24 @@ class ResetPasswordView(APIView):
         # so that the password is not changed if sending the message fails
         account.set_password(new_password)
         account.save()
+
+        return response.Response(status=status.HTTP_200_OK)
+
+
+class DeleteAccountView(APIView):
+    def post(self, request, format=None):
+        user = request.user
+
+        current_password = request.data['current_password']
+
+        if not user.check_password(current_password):
+            return response.Response(
+                data={
+                    'current_password': ['Incorrect password'],
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user.delete()
 
         return response.Response(status=status.HTTP_200_OK)

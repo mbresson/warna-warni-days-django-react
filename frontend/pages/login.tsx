@@ -2,7 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { loginToServer } from "../common/apis/auth";
+import { loginToServer } from "../common/apis/account";
 
 const Login: React.FC<{}> = () => {
   const [username, setUsername] = useState("");
@@ -50,7 +50,6 @@ const Login: React.FC<{}> = () => {
             </label>
 
             <input
-              className="input-field"
               id="username"
               type="text"
               placeholder="Username"
@@ -67,7 +66,6 @@ const Login: React.FC<{}> = () => {
             </label>
 
             <input
-              className="input-field"
               id="password"
               type="password"
               placeholder="***"
@@ -82,7 +80,7 @@ const Login: React.FC<{}> = () => {
         {error && <p className="bad-feeling text-xl">{error}</p>}
 
         <button
-          className="big mt-6 positive-feeling"
+          className="big mb-2 mt-6 positive-feeling"
           type="submit"
           disabled={queryInProgress}
         >

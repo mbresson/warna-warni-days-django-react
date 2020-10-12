@@ -12,6 +12,16 @@ html {
   @apply bg-gradient-to-tr from-blue-200 to-orange-200 min-h-screen;
 }
 
+.screen-modal {
+  min-width: 75vw;
+}
+
+@screen lg {
+  .screen-modal {
+    min-width: 50vw;
+  }
+}
+
 button,
 select {
   @apply cursor-pointer;
@@ -29,6 +39,10 @@ button:focus {
   @apply text-3xl text-center mb-6 pb-2 border-b border-gray-300 w-3/4 mx-auto;
 }
 
+.section-title {
+  @apply text-2xl text-center mt-2 mb-2;
+}
+
 .small-caps {
   font-variant: small-caps;
 }
@@ -42,23 +56,29 @@ select {
   @apply text-lg block text-center pt-4 pb-2 mt-6;
 }
 
-button.medium {
-  @apply font-bold py-1 px-2 my-2;
+button.small,
+select.small {
+  @apply p-2;
+}
+
+button.medium,
+select.medium {
+  @apply font-bold py-1 px-2;
 }
 
 button.big,
 select.big {
-  @apply text-lg font-bold py-2 px-4 my-2;
+  @apply text-lg font-bold py-2 px-4;
 }
 
 @screen sm {
   button.medium {
-    @apply py-2 px-4 my-4;
+    @apply py-2 px-4;
   }
 
   button.big,
   select.big {
-    @apply py-4 px-8 my-4;
+    @apply py-4 px-8;
   }
 }
 

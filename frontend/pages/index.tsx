@@ -42,7 +42,7 @@ const DisplayModeControls: React.FC<{
   onChange: (displayMode: DisplayMode) => void;
 }> = ({ displayMode, onChange, currentMonth, currentYear }) => {
   return (
-    <div className="choice-group text-center">
+    <div className="choice-group text-center my-2">
       <button
         className={
           "big choice " +

@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import BaseUserManager
+from django.contrib.auth.password_validation import validate_password
 from rest_framework import permissions, serializers, validators
 
 UserModel = get_user_model()
@@ -23,6 +24,11 @@ class SignUpSerializer(serializers.ModelSerializer):
                 "A user with that email already exists.")
 
         return email
+
+    def validate_password(self, value):
+        validate_password(value)
+
+        return value
 
     class Meta:
         model = UserModel

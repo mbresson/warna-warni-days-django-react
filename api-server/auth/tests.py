@@ -90,6 +90,90 @@ class SignupTestCase(TestCase):
             }
         )
 
+    def test_cannot_create_user_if_password_is_too_weak(self):
+        response = self.CLIENT.post(
+            reverse('auth-signup'),
+            {
+                'username': 'licorn',
+                'email': 'licorn@oz.com',
+                'password': 'j',
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
+
+        self.assertEqual(
+            response.json(), {
+                'password': [
+                    'This password is too short. It must contain at least 8 characters.',
+                    'This password is too common.'
+                ],
+            }
+        )
+
+
+class ChangePasswordTestCase(TestCase):
+
+    CLIENT = Client()
+
+    @classmethod
+    def setUpTestData(cls):
+        UserModel.objects.create_user(
+            username='Toto',
+            email='toto@outlook.com',
+            password='my old password',
+        )
+
+    def setUp(self):
+        self.CLIENT.login(username='Toto', password='my old password')
+
+    def test_changes_password_if_correctly_authenticated(self):
+        response = self.CLIENT.post(
+            reverse('auth-change-password'),
+            {
+                'current_password': 'my old password',
+                'new_password': 'my NEW password',
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        user = UserModel.objects.get(username='Toto')
+
+        self.assertTrue(user.check_password('my NEW password'))
+
+    def test_returns_400_if_current_password_provided_is_wrong(self):
+        response = self.CLIENT.post(
+            reverse('auth-change-password'),
+            {
+                'current_password': 'this is wrong',
+                'new_password': 'my NEW password',
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {
+            'current_password': ['Incorrect password']
+        })
+
+    def test_returns_400_if_new_password_does_not_satisfy_basic_requirements(self):
+        response = self.CLIENT.post(
+            reverse('auth-change-password'),
+            {
+                'current_password': 'my old password',
+                'new_password': 'j',
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
+
+        self.assertEqual(response.json(), {
+            'new_password': [
+                'This password is too short. It must contain at least 8 characters.',
+                'This password is too common.'
+            ]
+        })
+
 
 class ResetPasswordTestCase(TestCase):
 
@@ -155,3 +239,53 @@ class ResetPasswordTestCase(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.emails_sent(), 0)
+
+
+class DeleteAccountTestCase(TestCase):
+
+    CLIENT = Client()
+
+    @classmethod
+    def setUpTestData(cls):
+        UserModel.objects.create_user(
+            username='foobar',
+            email='foo@bar.com',
+            password='foopass',
+        )
+
+    def setUp(self):
+        self.CLIENT.login(username='foobar', password='foopass')
+
+    def test_account_is_successfully_deleted(self):
+        response = self.CLIENT.post(
+            reverse('auth-delete-account'),
+            {
+                'current_password': 'foopass',
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertFalse(
+            UserModel.objects.filter(username='foobar').exists()
+        )
+
+        response = self.CLIENT.post(
+            reverse('auth-profile'),
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_account_is_not_deleted_if_password_is_wrong(self):
+        response = self.CLIENT.post(
+            reverse('auth-delete-account'),
+            {
+                'current_password': 'oups',
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
+
+        self.assertEqual(response.json(), {
+            'current_password': ['Incorrect password']
+        })

@@ -161,3 +161,113 @@ export const requestPasswordResetFromServer = async (
     };
   }
 };
+
+type ChangePasswordResponseFailed = {
+  state: "failed";
+  errors: {
+    [fieldName: string]: string[];
+  };
+};
+
+type ChangePasswordResponseSucceeded = {
+  state: "succeeded";
+};
+
+export type ChangePasswordResponse =
+  | ChangePasswordResponseFailed
+  | ChangePasswordResponseSucceeded;
+
+export const requestPasswordChangeFromServer = async (
+  currentPassword: string,
+  newPassword: string
+): Promise<ChangePasswordResponse> => {
+  try {
+    const csrfToken = getCookie("csrftoken");
+
+    const response = await fetch("/api/auth/change-password/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": csrfToken,
+      },
+      body: JSON.stringify({
+        current_password: currentPassword,
+        new_password: newPassword,
+      }),
+    });
+
+    if (response.status == 200) {
+      return {
+        state: "succeeded",
+      };
+    } else {
+      return {
+        state: "failed",
+        errors: await response.json(),
+      };
+    }
+  } catch {
+    return {
+      state: "failed",
+      errors: {
+        internalError: [
+          "The server encountered an unexpected error, please try again later",
+        ],
+      },
+    };
+  }
+};
+
+type AccountDeletionResponseFailed = {
+  state: "failed";
+  errors: {
+    [fieldName: string]: string[];
+  };
+};
+
+type AccountDeletionResponseSucceeded = {
+  state: "succeeded";
+};
+
+export type AccountDeletionResponse =
+  | AccountDeletionResponseFailed
+  | AccountDeletionResponseSucceeded;
+
+export const requestAccountDeletionFromServer = async (
+  currentPassword: string
+): Promise<AccountDeletionResponse> => {
+  try {
+    const csrfToken = getCookie("csrftoken");
+
+    const response = await fetch("/api/auth/delete-account/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": csrfToken,
+      },
+      body: JSON.stringify({
+        current_password: currentPassword,
+      }),
+    });
+
+    if (response.status == 200) {
+      return {
+        state: "succeeded",
+      };
+    } else {
+      return {
+        state: "failed",
+        errors: await response.json(),
+      };
+    }
+  } catch {
+    return {
+      state: "failed",
+      errors: {
+        internalError: [
+          "The server encountered an unexpected error, please try again later",
+        ],
+      },
+    };
+  }
+};
