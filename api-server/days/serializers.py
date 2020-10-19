@@ -5,4 +5,4 @@ from rest_framework import serializers
 class DaySerializer(serializers.ModelSerializer):
     class Meta:
         model = Day
-        fields = ['color', 'date']
+        fields = ['color', 'date', 'id']

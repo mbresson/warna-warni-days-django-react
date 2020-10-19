@@ -22,6 +22,11 @@ class Day(models.Model):
         db_index=True
     )
 
+    notes = models.TextField(
+        blank=True,
+        max_length=10000,
+    )
+
     class Meta:
         db_table = 'day'
 

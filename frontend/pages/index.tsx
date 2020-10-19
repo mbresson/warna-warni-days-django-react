@@ -119,7 +119,7 @@ const Index: React.FC<{}> = () => {
     displayModeFromQuery(router.query, currentMonth, currentYear)
   );
 
-  useEffect(() => {
+  const fetchData = () => {
     getDays(auth.username).then((daysList) => {
       let firstDateSoFar = dateToLocalYYYYMMDD(today);
 
@@ -138,7 +138,9 @@ const Index: React.FC<{}> = () => {
         firstDayDate: yyyyMMDDToDate(firstDateSoFar),
       });
     });
-  }, []);
+  };
+
+  useEffect(fetchData, []);
 
   if (data.state != "ready") {
     return null;
@@ -175,6 +177,7 @@ const Index: React.FC<{}> = () => {
             month={displayMode.month}
             year={displayMode.year}
             today={today}
+            onRefreshRequired={fetchData}
           />
         </>
       ) : (
@@ -183,6 +186,7 @@ const Index: React.FC<{}> = () => {
           date={today}
           numDays={14}
           today={today}
+          onRefreshRequired={fetchData}
         />
       )}
 

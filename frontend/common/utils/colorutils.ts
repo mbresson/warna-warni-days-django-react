@@ -27,3 +27,12 @@ export const computeBrightness = ([red, green, blue]: RGB): Brightness => {
 
   return brightness < 192 ? Brightness.Dark : Brightness.Light;
 };
+
+export const PRESET_COLORS = [
+  "#3333FF",
+  "#FF2222",
+  "#F9F900",
+  "#FF9900",
+  "#669900",
+  "#660099",
+];

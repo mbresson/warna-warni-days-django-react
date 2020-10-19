@@ -1,11 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { DateYYYYMMDD, DayData } from "../common/types";
-import {
-  dateToLocalYYYYMMDD,
-  SORTED_WEEKDAYS_SHORT_LONG,
-} from "../common/utils/dateutils";
+import { dateToLocalYYYYMMDD, yyyyMMDDToDate } from "../common/utils/dateutils";
 import { DayTile } from "./DayTile";
+import DayFormModal from "./DayFormModal";
 
 const enumerateLastNDatesDescOrder = (endDate: Date, n: number): Date[] => {
   const dates: Date[] = [];
@@ -28,6 +26,7 @@ type Properties = {
   date: Date;
   numDays: number;
   today: Date;
+  onRefreshRequired: () => void;
 };
 
 const LastNDaysDisplay: React.FC<Properties> = (props) => {
@@ -35,36 +34,51 @@ const LastNDaysDisplay: React.FC<Properties> = (props) => {
 
   const today = dateToLocalYYYYMMDD(props.today);
 
-  const endMonth = props.date.getMonth();
-  const endYear = props.date.getFullYear();
+  const [currentDayForm, setCurrentDayForm] = useState<DateYYYYMMDD | null>(
+    null
+  );
 
   return (
-    <div>
-      {lastTenDates.map((date) => {
-        const dateKey = dateToLocalYYYYMMDD(date);
+    <>
+      {currentDayForm ? (
+        <DayFormModal
+          onCancel={() => setCurrentDayForm(null)}
+          onSaved={() => {
+            props.onRefreshRequired();
+            setCurrentDayForm(null);
+          }}
+          date={yyyyMMDDToDate(currentDayForm)}
+          day={props.allUserDays[currentDayForm]}
+        />
+      ) : null}
+      <div>
+        {lastTenDates.map((date) => {
+          const dateKey = dateToLocalYYYYMMDD(date);
 
-        const weekday = SORTED_WEEKDAYS_SHORT_LONG[date.getDay()][1];
-
-        return (
-          <div
-            style={{ boxShadow: "0 -1px #EEE" }}
-            key={dateKey}
-            className={
-              "w-full cursor-pointer border-transparent border-2 hover:border-solid hover:border-gray-900  " +
-              (today == dateKey ? " border-dashed border-gray-900" : "")
-            }
-          >
-            <div className="w-full sm:w-3/4 mx-auto my-1">
-              <DayTile
-                date={date}
-                day={props.allUserDays[dateKey]}
-                today={props.today}
-              />
+          return (
+            <div
+              key={dateKey}
+              style={{ boxShadow: "0 1px #EEE" }}
+              className={
+                "w-full cursor-pointer border-transparent border-2 hover:border-solid hover:border-gray-900  " +
+                (today == dateKey ? " border-dashed border-gray-900" : "")
+              }
+              onClick={() => {
+                setCurrentDayForm(dateKey);
+              }}
+            >
+              <div className="w-full sm:w-3/4 mx-auto my-1">
+                <DayTile
+                  date={date}
+                  day={props.allUserDays[dateKey]}
+                  today={props.today}
+                />
+              </div>
             </div>
-          </div>
-        );
-      })}
-    </div>
+          );
+        })}
+      </div>
+    </>
   );
 };
 export default LastNDaysDisplay;

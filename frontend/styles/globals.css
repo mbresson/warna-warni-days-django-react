@@ -48,7 +48,8 @@ button:focus {
 }
 
 input,
-select {
+select,
+textarea {
   @apply border border-gray-500 p-2 w-3/4 bg-white;
 }
 
@@ -63,23 +64,12 @@ select.small {
 
 button.medium,
 select.medium {
-  @apply font-bold py-1 px-2;
+  @apply font-bold py-2 px-4;
 }
 
 button.big,
 select.big {
-  @apply text-lg font-bold py-2 px-4;
-}
-
-@screen sm {
-  button.medium {
-    @apply py-2 px-4;
-  }
-
-  button.big,
-  select.big {
-    @apply py-4 px-8;
-  }
+  @apply text-lg font-bold py-4 px-8;
 }
 
 input.bad-feeling {

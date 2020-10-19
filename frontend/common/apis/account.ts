@@ -1,4 +1,5 @@
 import { get as getCookie } from "js-cookie";
+import { INTERNAL_ERROR } from "./errors";
 
 type LoginResponseFailed = {
   state: "failed";
@@ -104,9 +105,7 @@ export const signUpToServer = async (
     return {
       state: "failed",
       errors: {
-        internalError: [
-          "The server encountered an unexpected error, please try again later",
-        ],
+        internalError: [INTERNAL_ERROR],
       },
     };
   }
@@ -210,9 +209,7 @@ export const requestPasswordChangeFromServer = async (
     return {
       state: "failed",
       errors: {
-        internalError: [
-          "The server encountered an unexpected error, please try again later",
-        ],
+        internalError: [INTERNAL_ERROR],
       },
     };
   }
@@ -264,9 +261,7 @@ export const requestAccountDeletionFromServer = async (
     return {
       state: "failed",
       errors: {
-        internalError: [
-          "The server encountered an unexpected error, please try again later",
-        ],
+        internalError: [INTERNAL_ERROR],
       },
     };
   }

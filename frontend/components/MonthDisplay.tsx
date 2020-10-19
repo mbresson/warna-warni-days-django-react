@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { DateYYYYMMDD, DayData } from "../common/types";
 import {
@@ -7,8 +7,10 @@ import {
   Month1To12,
   dateToLocalYYYYMMDD,
   SORTED_WEEKDAYS_SHORT_LONG,
+  yyyyMMDDToDate,
 } from "../common/utils/dateutils";
 import { DayCircle } from "./DayCircle";
+import DayFormModal from "./DayFormModal";
 
 const ONE_SEVENTH = `${100 / 7}%`;
 
@@ -49,9 +51,14 @@ type Properties = {
   month: Month1To12;
   year: number;
   today: Date;
+  onRefreshRequired: () => void;
 };
 
 const MonthDisplay: React.FC<Properties> = (props) => {
+  const [currentDayForm, setCurrentDayForm] = useState<DateYYYYMMDD | null>(
+    null
+  );
+
   const firstSunday = findFirstDayInFirstWeekOfMonth(props.year, props.month);
 
   const weeks = enumerateWeeksDaysInMonth(firstSunday, props.month, props.year);
@@ -63,42 +70,64 @@ const MonthDisplay: React.FC<Properties> = (props) => {
   ).substr(0, 7);
 
   return (
-    <table className="w-full border-separate">
-      <thead>
-        <tr className="small-caps text-gray-900">
-          {SORTED_WEEKDAYS_SHORT_LONG.map(([short, long]) => (
-            <th style={{ width: ONE_SEVENTH }} key={short}>
-              <span className="lg:hidden">{short}</span>
-              <span className="hidden lg:inline">{long}</span>
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {weeks.map((week, weekIndex) => (
-          <tr key={weekIndex} style={{ boxShadow: "0 -1px #EEE" }}>
-            {week.map((dayKey, dayIndex) => (
-              <td key={dayIndex}>
-                {dayKey.startsWith(monthPrefix) ? (
-                  <div
-                    className={
-                      "cursor-pointer border-transparent border-2 hover:border-solid hover:border-gray-900  " +
-                      (today == dayKey ? " border-dashed border-gray-900" : "")
-                    }
-                  >
-                    <DayCircle date={dayKey} day={props.allUserDays[dayKey]} />
-                  </div>
-                ) : (
-                  <div>
-                    <DayCircle date={dayKey} disabled />
-                  </div>
-                )}
-              </td>
+    <>
+      {currentDayForm ? (
+        <DayFormModal
+          onCancel={() => setCurrentDayForm(null)}
+          onSaved={() => {
+            props.onRefreshRequired();
+            setCurrentDayForm(null);
+          }}
+          date={yyyyMMDDToDate(currentDayForm)}
+          day={props.allUserDays[currentDayForm]}
+        />
+      ) : null}
+
+      <table className="w-full border-separate">
+        <thead>
+          <tr className="small-caps text-gray-900">
+            {SORTED_WEEKDAYS_SHORT_LONG.map(([short, long]) => (
+              <th style={{ width: ONE_SEVENTH }} key={short}>
+                <span className="lg:hidden">{short}</span>
+                <span className="hidden lg:inline">{long}</span>
+              </th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {weeks.map((week, weekIndex) => (
+            <tr key={weekIndex} style={{ boxShadow: "0 -1px #EEE" }}>
+              {week.map((dayKey, dayIndex) => (
+                <td key={dayIndex}>
+                  {dayKey.startsWith(monthPrefix) ? (
+                    <div
+                      className={
+                        "cursor-pointer border-transparent border-2 hover:border-solid hover:border-gray-900  " +
+                        (today == dayKey
+                          ? " border-dashed border-gray-900"
+                          : "")
+                      }
+                      onClick={() => {
+                        setCurrentDayForm(dayKey);
+                      }}
+                    >
+                      <DayCircle
+                        date={dayKey}
+                        day={props.allUserDays[dayKey]}
+                      />
+                    </div>
+                  ) : (
+                    <div>
+                      <DayCircle date={dayKey} disabled />
+                    </div>
+                  )}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
   );
 };
 
