@@ -1,10 +1,10 @@
 import React from "react";
-import { DateYYYYMMDD, DayData } from "../common/types";
+import { DateYYYYMMDD, DayData } from "common/types";
 import {
   hexToRGB,
   computeBrightness,
   Brightness,
-} from "../common/utils/colorutils";
+} from "common/utils/colorutils";
 
 const EmptyDay: React.FC<{ monthDay: number; disabled: boolean }> = ({
   monthDay,

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { SORTED_MONTHS, Month1To12 } from "../common/utils/dateutils";
+import { SORTED_MONTHS, Month1To12 } from "common/utils/dateutils";
 
 const enumerateMonthOptions = (
   startDate: Date,
@@ -34,7 +34,7 @@ type Properties = {
   onMonthYearChange: (month: Month1To12, year: number) => void;
 };
 
-const MonthDisplayControls: React.FC<Properties> = (props) => {
+const MonthControls: React.FC<Properties> = (props) => {
   const monthOptions = enumerateMonthOptions(props.startDate, props.endDate);
 
   if (monthOptions.length == 0) {
@@ -117,4 +117,4 @@ const MonthDisplayControls: React.FC<Properties> = (props) => {
   );
 };
 
-export default MonthDisplayControls;
+export default MonthControls;

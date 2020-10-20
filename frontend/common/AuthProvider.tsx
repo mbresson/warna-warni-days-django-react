@@ -5,6 +5,7 @@ export type AuthStateAuthenticated = {
   state: "authenticated";
   username: string;
   email: string;
+  dateJoined: Date;
 };
 
 export type AuthStateUnauthenticated = {
@@ -45,6 +46,7 @@ export const AuthProvider = ({ children }) => {
           state: "authenticated",
           username: profile.username,
           email: profile.email,
+          dateJoined: new Date(profile.date_joined),
         });
       } else {
         throw Error(`Authentication failed: ${response.status}`);

@@ -1,16 +1,106 @@
 import { get as getCookie } from "js-cookie";
 
-import { DayData } from "../types";
+import { DayData } from "common/types";
 import { INTERNAL_ERROR } from "./errors";
+import { dateToLocalYYYYMMDD } from "common/utils/dateutils";
 
-export const getDays = async (username: string): Promise<DayData[]> => {
-  const response = await fetch(`/api/users/${username}/days/`);
+type GetDaysPageResponseSucceeded = {
+  state: "succeeded";
+  data: {
+    count: number;
+    next?: string;
+    previous?: string;
+    results: DayData[];
+  };
+};
 
-  if (response.status != 200) {
-    return [];
+type GetDaysPageResponseFailed = {
+  state: "failed";
+  error: string;
+};
+
+type GetDaysPageResponse =
+  | GetDaysPageResponseSucceeded
+  | GetDaysPageResponseFailed;
+
+const getDaysPage = async (pageUrl: string): Promise<GetDaysPageResponse> => {
+  try {
+    const response = await fetch(pageUrl);
+    const body = await response.json();
+
+    if (response.status != 200) {
+      return {
+        state: "failed",
+        error: body["detail"],
+      };
+    }
+
+    return {
+      state: "succeeded",
+      data: body,
+    };
+  } catch {
+    return {
+      state: "failed",
+      error: INTERNAL_ERROR,
+    };
+  }
+};
+
+type GetDaysResponseSucceeded = {
+  state: "succeeded";
+  days: DayData[];
+};
+
+type GetDaysResponseFailed = GetDaysPageResponseFailed;
+
+type GetDaysResponse = GetDaysResponseSucceeded | GetDaysResponseFailed;
+
+type GetDaysParams = {
+  after?: Date;
+  before?: Date;
+  limit?: number;
+  order?: "asc" | "desc";
+};
+
+export const getDays = async (
+  username: string,
+  params: GetDaysParams = {}
+): Promise<GetDaysResponse> => {
+  const queryParams = [
+    "ordering=" + (params.order == "desc" ? "-date" : "date"),
+  ];
+
+  if (params.after) {
+    queryParams.push("date_after=" + dateToLocalYYYYMMDD(params.after));
   }
 
-  return await response.json();
+  if (params.before) {
+    queryParams.push("date_before=" + dateToLocalYYYYMMDD(params.before));
+  }
+
+  if (params.limit) {
+    queryParams.push(`limit=${params.limit}`);
+  }
+
+  let days = [];
+
+  let pageUrl = `/api/users/${username}/days/?${queryParams.join("&")}`;
+  while (pageUrl) {
+    const response = await getDaysPage(pageUrl);
+
+    if (response.state == "failed") {
+      return response;
+    }
+
+    days = days.concat(response.data.results);
+    pageUrl = response.data.next;
+  }
+
+  return {
+    state: "succeeded",
+    days,
+  };
 };
 
 type CreateUpdateDayResponseFailed = {

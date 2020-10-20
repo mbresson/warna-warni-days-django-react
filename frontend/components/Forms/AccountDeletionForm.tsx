@@ -1,14 +1,7 @@
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import PasswordCheckModal from "./PasswordCheckModal";
-import { requestAccountDeletionFromServer } from "../common/apis/account";
-import ErrorsList from "../components/ErrorsList";
-
-enum FormState {
-  Unsubmitted,
-  InProgress,
-  Successful,
-}
+import PasswordCheckModal from "../Modals/PasswordCheckModal";
+import { requestAccountDeletionFromServer } from "common/apis/account";
 
 type FormErrors = {
   currentPassword?: string[];

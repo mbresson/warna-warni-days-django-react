@@ -3,10 +3,9 @@ import {
   computeBrightness,
   hexToRGB,
   Brightness,
-} from "../common/utils/colorutils";
-import { HexRRGGBB } from "../common/types";
-import ColorPicker from "./ColorPicker";
-import { RGBColor, SliderPicker } from "react-color";
+} from "common/utils/colorutils";
+import { HexRRGGBB } from "common/types";
+import { SliderPicker } from "react-color";
 
 export const ColorPill: React.FC<{ color: HexRRGGBB }> = ({ color }) => {
   const brightness = computeBrightness(hexToRGB(color));
@@ -107,26 +106,3 @@ export const OldCustomizableColorPill: React.FC<{
     </div>
   );
 };
-
-/*
-
-
-        <ColorPicker
-          onChange={(color) => {
-            console.log("new color = ", color);
-          }}
-        />
-
-                    <CustomizableColorPill
-              onChange={(color) => {
-                setCustomColor(color);
-              }}
-              color={customColor}
-              onSelect={() => {
-                setDay({
-                  ...day,
-                  color: customColor,
-                });
-              }}
-            />
-*/

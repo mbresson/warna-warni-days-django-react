@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
-import { useAuth } from "../common/AuthProvider";
-import { logoutFromServer } from "../common/apis/account";
+import { useAuth } from "common/AuthProvider";
+import { logoutFromServer } from "common/apis/account";
 
 const Main: React.FC<{}> = ({ children }) => {
   const auth = useAuth();

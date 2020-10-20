@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import PasswordCheckModal from "./PasswordCheckModal";
-import { requestPasswordChangeFromServer } from "../common/apis/account";
-import ErrorsList from "../components/ErrorsList";
+import PasswordCheckModal from "../Modals/PasswordCheckModal";
+import { requestPasswordChangeFromServer } from "common/apis/account";
+import ErrorsList from "components/ErrorsList";
 
 enum FormState {
   Unsubmitted,

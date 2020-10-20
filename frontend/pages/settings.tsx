@@ -1,8 +1,8 @@
 import Head from "next/head";
 import Link from "next/link";
 import React from "react";
-import AccountDeletionForm from "../components/AccountDeletionForm";
-import PasswordChangeForm from "../components/PasswordChangeForm";
+import AccountDeletionForm from "components/Forms/AccountDeletionForm";
+import PasswordChangeForm from "components/Forms/PasswordChangeForm";
 
 const Settings: React.FC<{}> = () => {
   return (

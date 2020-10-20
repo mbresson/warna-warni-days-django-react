@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import {
   PasswordResetResponse,
   requestPasswordResetFromServer,
-} from "../common/apis/account";
+} from "common/apis/account";
 
 const ResetPasswordPage: React.FC<{}> = () => {
   const [username, setUsername] = useState("");

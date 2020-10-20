@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_filters',
     'core',
     'days',
 ]
@@ -129,6 +130,8 @@ REST_FRAMEWORK = {
         'anon': '50/minute',
         'user': '5000/minute',
     },
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 31,
 }
 
 

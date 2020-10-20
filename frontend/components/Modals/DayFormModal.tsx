@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { DayData, HexRRGGBB } from "../common/types";
-import { PRESET_COLORS } from "../common/utils/colorutils";
-import { dateToLocalYYYYMMDD } from "../common/utils/dateutils";
-import { createDay, updateDay } from "../common/apis/days";
-import { useAuth, AuthStateAuthenticated } from "../common/AuthProvider";
-import { ColorPill, CustomizableColorPill } from "./ColorPill";
+import { DayData, HexRRGGBB } from "common/types";
+import { PRESET_COLORS } from "common/utils/colorutils";
+import { dateToLocalYYYYMMDD } from "common/utils/dateutils";
+import { createDay, updateDay } from "common/apis/days";
+import { useAuth, AuthStateAuthenticated } from "common/AuthProvider";
+import { ColorPill, CustomizableColorPill } from "../ColorPill";
 import { SliderPicker } from "react-color";
 
 type Properties = {
@@ -72,7 +72,7 @@ const DayFormModal: React.FC<Properties> = (props) => {
 
   return createPortal(
     <>
-      <div className="absolute top-0 left-0 w-screen min-h-screen bg-opacity-90 bg-gray-300 p-2 lg:p-16">
+      <div className="fixed top-0 left-0 w-full min-h-screen bg-opacity-90 bg-gray-300 p-2 lg:p-16 z-10">
         <div
           style={{
             background: day?.color
@@ -112,7 +112,7 @@ const DayFormModal: React.FC<Properties> = (props) => {
 
               <div
                 className={
-                  "relative inline-block border-2 mx-1 p-1 cursor-pointer rounded-lg hover:border-black z-20 " +
+                  "relative inline-block border-2 mx-1 p-1 cursor-pointer rounded-lg hover:border-black z-30 " +
                   (day && customColor == day?.color
                     ? "border-black"
                     : "border-gray-200")
@@ -126,7 +126,7 @@ const DayFormModal: React.FC<Properties> = (props) => {
                 {pickerOpen && (
                   <div
                     style={{ left: "50%", transform: "translate(-50%, 0)" }}
-                    className="absolute top-0 z-20 mt-16 w-64 h-auto border bg-white border-gray-500 p-8 box-content"
+                    className="absolute top-0 z-30 mt-16 w-64 h-auto border bg-white border-gray-500 p-8 box-content"
                   >
                     <SliderPicker
                       onChange={(color) => {
@@ -203,16 +203,16 @@ const DayFormModal: React.FC<Properties> = (props) => {
             </div>
           </form>
         </div>
-      </div>
 
-      {pickerOpen && (
-        <div
-          className="fixed top-0 w-full h-full bg-opacity-90 bg-gray-300 z-10"
-          onClick={() => {
-            setPickerOpen(false);
-          }}
-        ></div>
-      )}
+        {pickerOpen && (
+          <div
+            className="fixed top-0 w-full h-full bg-opacity-90 bg-gray-300 z-20"
+            onClick={() => {
+              setPickerOpen(false);
+            }}
+          ></div>
+        )}
+      </div>
     </>,
     ref.current
   );

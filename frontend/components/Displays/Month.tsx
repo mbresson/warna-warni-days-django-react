@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { DateYYYYMMDD, DayData } from "../common/types";
+import { DateYYYYMMDD, DayData } from "common/types";
 import {
   datePlusOneWeek,
   findFirstDayInFirstWeekOfMonth,
@@ -8,9 +8,9 @@ import {
   dateToLocalYYYYMMDD,
   SORTED_WEEKDAYS_SHORT_LONG,
   yyyyMMDDToDate,
-} from "../common/utils/dateutils";
-import { DayCircle } from "./DayCircle";
-import DayFormModal from "./DayFormModal";
+} from "common/utils/dateutils";
+import { DayCircle } from "../Days/DayCircle";
+import DayFormModal from "../Modals/DayFormModal";
 
 const ONE_SEVENTH = `${100 / 7}%`;
 
@@ -47,17 +47,15 @@ const enumerateWeeksDaysInMonth = (
 };
 
 type Properties = {
-  allUserDays: Record<DateYYYYMMDD, DayData>;
+  today: Date;
   month: Month1To12;
   year: number;
-  today: Date;
+  days: Record<DateYYYYMMDD, DayData>;
   onRefreshRequired: () => void;
 };
 
-const MonthDisplay: React.FC<Properties> = (props) => {
-  const [currentDayForm, setCurrentDayForm] = useState<DateYYYYMMDD | null>(
-    null
-  );
+const Month: React.FC<Properties> = (props) => {
+  const [dayFormDate, setDayFormDate] = useState<DateYYYYMMDD | null>(null);
 
   const firstSunday = findFirstDayInFirstWeekOfMonth(props.year, props.month);
 
@@ -71,15 +69,15 @@ const MonthDisplay: React.FC<Properties> = (props) => {
 
   return (
     <>
-      {currentDayForm ? (
+      {dayFormDate ? (
         <DayFormModal
-          onCancel={() => setCurrentDayForm(null)}
+          onCancel={() => setDayFormDate(null)}
           onSaved={() => {
+            setDayFormDate(null);
             props.onRefreshRequired();
-            setCurrentDayForm(null);
           }}
-          date={yyyyMMDDToDate(currentDayForm)}
-          day={props.allUserDays[currentDayForm]}
+          date={yyyyMMDDToDate(dayFormDate)}
+          day={props.days[dayFormDate]}
         />
       ) : null}
 
@@ -108,13 +106,10 @@ const MonthDisplay: React.FC<Properties> = (props) => {
                           : "")
                       }
                       onClick={() => {
-                        setCurrentDayForm(dayKey);
+                        setDayFormDate(dayKey);
                       }}
                     >
-                      <DayCircle
-                        date={dayKey}
-                        day={props.allUserDays[dayKey]}
-                      />
+                      <DayCircle date={dayKey} day={props.days[dayKey]} />
                     </div>
                   ) : (
                     <div>
@@ -131,4 +126,4 @@ const MonthDisplay: React.FC<Properties> = (props) => {
   );
 };
 
-export default MonthDisplay;
+export default Month;

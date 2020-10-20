@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import ErrorsList from "./ErrorsList";
+import ErrorsList from "../ErrorsList";
 
 type Properties = {
   onCancel: () => void;

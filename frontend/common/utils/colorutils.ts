@@ -1,4 +1,4 @@
-import { HexRRGGBB } from "../types";
+import { HexRRGGBB } from "common/types";
 
 export type RGB = [number, number, number];
 

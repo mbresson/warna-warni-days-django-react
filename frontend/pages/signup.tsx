@@ -2,8 +2,8 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { signUpToServer } from "../common/apis/account";
-import ErrorsList from "../components/ErrorsList";
+import { signUpToServer } from "common/apis/account";
+import ErrorsList from "components/ErrorsList";
 
 type SignupErrors = {
   username?: string[];

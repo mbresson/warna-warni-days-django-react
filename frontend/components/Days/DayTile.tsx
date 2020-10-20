@@ -1,11 +1,11 @@
 import React from "react";
-import { SORTED_WEEKDAYS_SHORT_LONG } from "../common/utils/dateutils";
-import { DayData } from "../common/types";
+import { SORTED_WEEKDAYS_SHORT_LONG } from "common/utils/dateutils";
+import { DayData } from "common/types";
 import {
   hexToRGB,
   computeBrightness,
   Brightness,
-} from "../common/utils/colorutils";
+} from "common/utils/colorutils";
 
 const prettyDate = (date: Date, today: Date): string => {
   const difference = Math.abs(today.getTime() - date.getTime());
