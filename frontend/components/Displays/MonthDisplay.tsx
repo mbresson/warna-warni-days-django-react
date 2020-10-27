@@ -89,6 +89,7 @@ const MonthDisplay: React.FC<Properties> = (props) => {
         onRefreshRequired={() => {
           fetchData();
         }}
+        weekFirstDay={auth.preferredFirstWeekday}
       />
     </>
   );

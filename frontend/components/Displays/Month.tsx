@@ -3,10 +3,12 @@ import React, { useState } from "react";
 import { DateYYYYMMDD, DayData } from "common/types";
 import {
   datePlusOneWeek,
-  findFirstDayInFirstWeekOfMonth,
+  findMondayAsFirstWeekdayInMonthFirstWeek,
+  findSundayAsFirstWeekdayInMonthFirstWeek,
   Month1To12,
   dateToLocalYYYYMMDD,
   SORTED_WEEKDAYS_SHORT_LONG,
+  WEEKDAYS_SHORT_LONG_STARTING_FROM_MONDAY,
   yyyyMMDDToDate,
 } from "common/utils/dateutils";
 import { DayCircle } from "../Days/DayCircle";
@@ -52,20 +54,33 @@ type Properties = {
   year: number;
   days: Record<DateYYYYMMDD, DayData>;
   onRefreshRequired: () => void;
+  weekFirstDay: "monday" | "sunday";
 };
 
 const Month: React.FC<Properties> = (props) => {
   const [dayFormDate, setDayFormDate] = useState<DateYYYYMMDD | null>(null);
 
-  const firstSunday = findFirstDayInFirstWeekOfMonth(props.year, props.month);
+  const firstDayOfFirstWeek =
+    props.weekFirstDay == "monday"
+      ? findMondayAsFirstWeekdayInMonthFirstWeek(props.year, props.month)
+      : findSundayAsFirstWeekdayInMonthFirstWeek(props.year, props.month);
 
-  const weeks = enumerateWeeksDaysInMonth(firstSunday, props.month, props.year);
+  const weeks = enumerateWeeksDaysInMonth(
+    firstDayOfFirstWeek,
+    props.month,
+    props.year
+  );
 
   const today = dateToLocalYYYYMMDD(props.today);
 
   const monthPrefix = dateToLocalYYYYMMDD(
     new Date(props.year, props.month - 1, 1)
   ).substr(0, 7);
+
+  const weekdays_short_long =
+    props.weekFirstDay == "sunday"
+      ? SORTED_WEEKDAYS_SHORT_LONG
+      : WEEKDAYS_SHORT_LONG_STARTING_FROM_MONDAY;
 
   return (
     <>
@@ -84,7 +99,7 @@ const Month: React.FC<Properties> = (props) => {
       <table className="w-full border-separate">
         <thead>
           <tr className="small-caps text-gray-900">
-            {SORTED_WEEKDAYS_SHORT_LONG.map(([short, long]) => (
+            {weekdays_short_long.map(([short, long]) => (
               <th style={{ width: ONE_SEVENTH }} key={short}>
                 <span className="lg:hidden">{short}</span>
                 <span className="hidden lg:inline">{long}</span>

@@ -40,7 +40,7 @@ button:focus {
 }
 
 .section-title {
-  @apply text-2xl text-center mt-2 mb-2;
+  @apply text-2xl text-center my-2;
 }
 
 .small-caps {

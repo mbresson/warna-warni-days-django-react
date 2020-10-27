@@ -1,16 +1,12 @@
 import { get as getCookie } from "js-cookie";
-import { INTERNAL_ERROR } from "./errors";
+import {
+  INTERNAL_ERROR,
+  BasicResponseFailed,
+  BasicResponseSucceeded,
+  ApiWeekdays,
+} from "./responses";
 
-type LoginResponseFailed = {
-  state: "failed";
-  error: string;
-};
-
-type LoginResponseSucceeded = {
-  state: "succeeded";
-};
-
-export type LoginResponse = LoginResponseFailed | LoginResponseSucceeded;
+export type LoginResponse = BasicResponseFailed | BasicResponseSucceeded;
 
 export const loginToServer = async (
   username: string,
@@ -29,9 +25,7 @@ export const loginToServer = async (
     });
 
     if (response.status == 200) {
-      return {
-        state: "succeeded",
-      };
+      return { state: "succeeded" };
     } else {
       const body = await response.json();
 
@@ -67,11 +61,7 @@ type SignUpResponseFailed = {
   };
 };
 
-type SignUpResponseSucceeded = {
-  state: "succeeded";
-};
-
-export type SignUpResponse = SignUpResponseFailed | SignUpResponseSucceeded;
+export type SignUpResponse = SignUpResponseFailed | BasicResponseSucceeded;
 
 export const signUpToServer = async (
   username: string,
@@ -92,9 +82,7 @@ export const signUpToServer = async (
     });
 
     if (response.status == 201) {
-      return {
-        state: "succeeded",
-      };
+      return { state: "succeeded" };
     } else {
       return {
         state: "failed",
@@ -111,20 +99,11 @@ export const signUpToServer = async (
   }
 };
 
-type PasswordResetResponseFailed = {
-  state: "failed";
-  error: string;
-};
-
-type PasswordResetResponseSucceeded = {
-  state: "succeeded";
-};
-
 export type PasswordResetResponse =
-  | PasswordResetResponseFailed
-  | PasswordResetResponseSucceeded;
+  | BasicResponseFailed
+  | BasicResponseSucceeded;
 
-export const requestPasswordResetFromServer = async (
+export const requestPasswordReset = async (
   username: string,
   email: string
 ): Promise<PasswordResetResponse> => {
@@ -141,9 +120,7 @@ export const requestPasswordResetFromServer = async (
     });
 
     if (response.status == 200) {
-      return {
-        state: "succeeded",
-      };
+      return { state: "succeeded" };
     } else {
       const body = await response.json();
 
@@ -161,44 +138,47 @@ export const requestPasswordResetFromServer = async (
   }
 };
 
-type ChangePasswordResponseFailed = {
+type UpdateAccountResponseFailed = {
   state: "failed";
   errors: {
-    [fieldName: string]: string[];
+    password?: string[];
+    email?: string[];
+    current_password?: string;
+    other?: string;
   };
 };
 
-type ChangePasswordResponseSucceeded = {
-  state: "succeeded";
+export type UpdateAccountResponse =
+  | UpdateAccountResponseFailed
+  | BasicResponseSucceeded;
+
+export type UpdateAccountChangeset = {
+  email?: string;
+  password?: string;
+  preferred_first_weekday?: ApiWeekdays;
 };
 
-export type ChangePasswordResponse =
-  | ChangePasswordResponseFailed
-  | ChangePasswordResponseSucceeded;
-
-export const requestPasswordChangeFromServer = async (
-  currentPassword: string,
-  newPassword: string
-): Promise<ChangePasswordResponse> => {
+export const updateAccount = async (
+  changes: UpdateAccountChangeset,
+  currentPassword?: string
+): Promise<UpdateAccountResponse> => {
   try {
     const csrfToken = getCookie("csrftoken");
 
-    const response = await fetch("/api/auth/change-password/", {
-      method: "POST",
+    const response = await fetch("/api/auth/account/", {
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         "X-CSRFToken": csrfToken,
       },
       body: JSON.stringify({
         current_password: currentPassword,
-        new_password: newPassword,
+        ...changes,
       }),
     });
 
     if (response.status == 200) {
-      return {
-        state: "succeeded",
-      };
+      return { state: "succeeded" };
     } else {
       return {
         state: "failed",
@@ -209,7 +189,7 @@ export const requestPasswordChangeFromServer = async (
     return {
       state: "failed",
       errors: {
-        internalError: [INTERNAL_ERROR],
+        other: INTERNAL_ERROR,
       },
     };
   }
@@ -218,26 +198,23 @@ export const requestPasswordChangeFromServer = async (
 type AccountDeletionResponseFailed = {
   state: "failed";
   errors: {
-    [fieldName: string]: string[];
+    current_password?: string;
+    other?: string;
   };
-};
-
-type AccountDeletionResponseSucceeded = {
-  state: "succeeded";
 };
 
 export type AccountDeletionResponse =
   | AccountDeletionResponseFailed
-  | AccountDeletionResponseSucceeded;
+  | BasicResponseSucceeded;
 
-export const requestAccountDeletionFromServer = async (
+export const deleteAccountFromServer = async (
   currentPassword: string
 ): Promise<AccountDeletionResponse> => {
   try {
     const csrfToken = getCookie("csrftoken");
 
-    const response = await fetch("/api/auth/delete-account/", {
-      method: "POST",
+    const response = await fetch("/api/auth/account/", {
+      method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         "X-CSRFToken": csrfToken,
@@ -247,10 +224,8 @@ export const requestAccountDeletionFromServer = async (
       }),
     });
 
-    if (response.status == 200) {
-      return {
-        state: "succeeded",
-      };
+    if (response.status == 204) {
+      return { state: "succeeded" };
     } else {
       return {
         state: "failed",
@@ -261,7 +236,7 @@ export const requestAccountDeletionFromServer = async (
     return {
       state: "failed",
       errors: {
-        internalError: [INTERNAL_ERROR],
+        other: INTERNAL_ERROR,
       },
     };
   }

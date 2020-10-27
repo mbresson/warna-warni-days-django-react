@@ -1,10 +1,12 @@
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import PasswordCheckModal from "../Modals/PasswordCheckModal";
-import { requestAccountDeletionFromServer } from "common/apis/account";
+import { deleteAccountFromServer } from "common/apis/account";
+import ErrorsList from "components/ErrorsList";
 
 type FormErrors = {
-  currentPassword?: string[];
+  currentPassword?: string;
+  internalError?: string;
 };
 
 const AccountDeletionForm: React.FC<{}> = () => {
@@ -18,7 +20,7 @@ const AccountDeletionForm: React.FC<{}> = () => {
     setInProgress(true);
     setErrors({});
 
-    const response = await requestAccountDeletionFromServer(currentPassword);
+    const response = await deleteAccountFromServer(currentPassword);
 
     setInProgress(false);
 
@@ -28,6 +30,7 @@ const AccountDeletionForm: React.FC<{}> = () => {
     } else {
       setErrors({
         currentPassword: response.errors.current_password,
+        internalError: response.errors.other,
       });
 
       if (response.errors.current_password) {
@@ -40,21 +43,26 @@ const AccountDeletionForm: React.FC<{}> = () => {
     <>
       {checkCurrentPassword ? (
         <PasswordCheckModal
+          key="password-check-modal"
           onPasswordSubmitted={onCurrentPasswordSubmitted}
           onCancel={() => setCheckCurrentPassword(false)}
-          errors={errors.currentPassword}
+          errors={[errors.currentPassword]}
         />
       ) : null}
 
-      <button
-        className="medium bad-feeling block m-auto my-6"
-        disabled={inProgress}
-        onClick={(e) => {
-          setCheckCurrentPassword(true);
-        }}
-      >
-        {inProgress ? "loading..." : "I want to delete my account forever"}
-      </button>
+      <div key="account-deletion-form">
+        <button
+          className="medium bad-feeling block m-auto my-6"
+          disabled={inProgress}
+          onClick={(e) => {
+            setCheckCurrentPassword(true);
+          }}
+        >
+          {inProgress ? "loading..." : "I want to delete my account forever"}
+        </button>
+
+        {errors.internalError && <ErrorsList errors={[errors.internalError]} />}
+      </div>
     </>
   );
 };

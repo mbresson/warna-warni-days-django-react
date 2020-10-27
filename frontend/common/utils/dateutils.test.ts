@@ -1,6 +1,7 @@
 import {
   datePlusOneWeek,
-  findFirstDayInFirstWeekOfMonth,
+  findMondayAsFirstWeekdayInMonthFirstWeek,
+  findSundayAsFirstWeekdayInMonthFirstWeek,
   dateToLocalYYYYMMDD,
   yyyyMMDDToDate,
 } from "./dateutils";
@@ -36,10 +37,13 @@ describe("datePlusOneWeek", () => {
   });
 });
 
-describe("findFirstDayInFirstWeekOfMonth", () => {
+describe("findSundayAsFirstWeekdayInMonthFirstWeek", () => {
   test("finds 01/MM/YYYY when the first day of the month is exactly Sunday", () => {
     // 1st March 2020 is a Sunday
-    const dateOfSunday = findFirstDayInFirstWeekOfMonth(2020, Months.March);
+    const dateOfSunday = findSundayAsFirstWeekdayInMonthFirstWeek(
+      2020,
+      Months.March
+    );
 
     const expectedDate = "2020-03-01";
 
@@ -54,9 +58,44 @@ describe("findFirstDayInFirstWeekOfMonth", () => {
     ];
 
     for (let [year, month, expectedDate] of yearsMonthsToExpectedDate) {
-      const dateOfSunday = findFirstDayInFirstWeekOfMonth(year, month);
+      const dateOfSunday = findSundayAsFirstWeekdayInMonthFirstWeek(
+        year,
+        month
+      );
 
       expect(dateToLocalYYYYMMDD(dateOfSunday)).toEqual(expectedDate);
+    }
+  });
+});
+
+describe("findMondayAsFirstWeekdayInMonthFirstWeek", () => {
+  test("finds 01/MM/YYYY when the first day of the month is exactly Monday", () => {
+    // 1st June 2020 is a Monday
+    const dateOfMonday = findMondayAsFirstWeekdayInMonthFirstWeek(
+      2020,
+      Months.June
+    );
+
+    const expectedDate = "2020-06-01";
+
+    expect(dateToLocalYYYYMMDD(dateOfMonday)).toEqual(expectedDate);
+  });
+
+  test("finds DD/(MM-1)/YYYY when the first day of the month is not Monday", () => {
+    const yearsMonthsToExpectedDate: [number, number, string][] = [
+      [2020, Months.October, "2020-09-28"], // 1st September 2020 = Thirsday
+      [2020, Months.September, "2020-08-31"], // 1st September 2020 = Tuesday
+      [2020, Months.August, "2020-07-27"], // 1st August 2020 = Saturday
+      [2020, Months.March, "2020-02-24"], // 1st March 2020 = Sunday
+    ];
+
+    for (let [year, month, expectedDate] of yearsMonthsToExpectedDate) {
+      const dateOfMonday = findMondayAsFirstWeekdayInMonthFirstWeek(
+        year,
+        month
+      );
+
+      expect(dateToLocalYYYYMMDD(dateOfMonday)).toEqual(expectedDate);
     }
   });
 });

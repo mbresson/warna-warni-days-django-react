@@ -60,10 +60,14 @@ const Index: React.FC<{}> = () => {
 
   const router = useRouter();
 
-  const auth = useAuth() as AuthStateAuthenticated;
+  const auth = useAuth();
   const [displayMode, setDisplayMode] = useState<DisplayModes>(
     displayModeFromQuery(router.query)
   );
+
+  if (auth.state != "authenticated") {
+    return null;
+  }
 
   return (
     <>

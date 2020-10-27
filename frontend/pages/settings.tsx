@@ -3,6 +3,7 @@ import Link from "next/link";
 import React from "react";
 import AccountDeletionForm from "components/Forms/AccountDeletionForm";
 import PasswordChangeForm from "components/Forms/PasswordChangeForm";
+import PreferencesForm from "components/Forms/PreferencesForm";
 
 const Settings: React.FC<{}> = () => {
   return (
@@ -19,13 +20,23 @@ const Settings: React.FC<{}> = () => {
         </button>
       </Link>
 
-      <h3 className="section-title">Change my password</h3>
+      <div className="border border-dashed border-gray-500 p-4 sm:p-8 my-4">
+        <h3 className="section-title">Preferences</h3>
 
-      <PasswordChangeForm />
+        <PreferencesForm />
+      </div>
 
-      <h3 className="section-title">Delete my account</h3>
+      <div className="border border-dashed border-gray-500 p-4 sm:p-8 my-4">
+        <h3 className="section-title">Change my password</h3>
 
-      <AccountDeletionForm />
+        <PasswordChangeForm />
+      </div>
+
+      <div className="border border-dashed border-gray-500 p-4 sm:p-8 my-4">
+        <h3 className="section-title">Delete my account</h3>
+
+        <AccountDeletionForm />
+      </div>
     </>
   );
 };

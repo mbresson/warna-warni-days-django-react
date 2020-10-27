@@ -6,6 +6,7 @@ type Properties = {
   onCancel: () => void;
   onPasswordSubmitted: (password: string) => void;
   errors?: string[];
+  warning?: string | React.ReactNode;
 };
 
 const PasswordCheckModal: React.FC<Properties> = (props) => {
@@ -23,7 +24,7 @@ const PasswordCheckModal: React.FC<Properties> = (props) => {
   }
 
   return createPortal(
-    <div className="absolute top-0 left-0 w-screen h-screen bg-opacity-90 bg-gray-300">
+    <div className="fixed top-0 left-0 w-screen h-screen bg-opacity-90 bg-gray-300">
       <form
         style={{
           top: "50%",
@@ -37,6 +38,10 @@ const PasswordCheckModal: React.FC<Properties> = (props) => {
         }}
       >
         <div>
+          {props.warning && (
+            <div className="text-xl mb-8 mixed-feeling">{props.warning}</div>
+          )}
+
           <label className="text-xl block mb-4" htmlFor="password">
             Enter your current password for this operation
           </label>
@@ -50,17 +55,21 @@ const PasswordCheckModal: React.FC<Properties> = (props) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            autoFocus
           />
         </div>
 
         {props.errors && <ErrorsList errors={props.errors} />}
 
         <div className="mt-8">
-          <button className="medium positive-feeling" type="submit">
+          <button
+            className="mr-2 sm:mr-0 medium positive-feeling"
+            type="submit"
+          >
             Submit
           </button>
 
-          <strong className="mx-5 text-xl">or</strong>
+          <strong className="hidden sm:inline mx-5 text-xl">or</strong>
 
           <button className="medium mixed-feeling" onClick={props.onCancel}>
             Cancel

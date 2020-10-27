@@ -3,7 +3,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import {
   PasswordResetResponse,
-  requestPasswordResetFromServer,
+  requestPasswordReset,
 } from "common/apis/account";
 
 const ResetPasswordPage: React.FC<{}> = () => {
@@ -17,7 +17,7 @@ const ResetPasswordPage: React.FC<{}> = () => {
     setResponse(null);
     setQueryInProgress(true);
 
-    const response = await requestPasswordResetFromServer(username, email);
+    const response = await requestPasswordReset(username, email);
     setQueryInProgress(false);
     setResponse(response);
   };

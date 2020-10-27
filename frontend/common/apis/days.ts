@@ -1,7 +1,11 @@
 import { get as getCookie } from "js-cookie";
 
 import { DayData } from "common/types";
-import { INTERNAL_ERROR } from "./errors";
+import {
+  INTERNAL_ERROR,
+  BasicResponseFailed,
+  BasicResponseSucceeded,
+} from "./responses";
 import { dateToLocalYYYYMMDD } from "common/utils/dateutils";
 
 type GetDaysPageResponseSucceeded = {
@@ -14,14 +18,7 @@ type GetDaysPageResponseSucceeded = {
   };
 };
 
-type GetDaysPageResponseFailed = {
-  state: "failed";
-  error: string;
-};
-
-type GetDaysPageResponse =
-  | GetDaysPageResponseSucceeded
-  | GetDaysPageResponseFailed;
+type GetDaysPageResponse = GetDaysPageResponseSucceeded | BasicResponseFailed;
 
 const getDaysPage = async (pageUrl: string): Promise<GetDaysPageResponse> => {
   try {
@@ -52,9 +49,7 @@ type GetDaysResponseSucceeded = {
   days: DayData[];
 };
 
-type GetDaysResponseFailed = GetDaysPageResponseFailed;
-
-type GetDaysResponse = GetDaysResponseSucceeded | GetDaysResponseFailed;
+type GetDaysResponse = GetDaysResponseSucceeded | BasicResponseFailed;
 
 type GetDaysParams = {
   after?: Date;
@@ -103,18 +98,7 @@ export const getDays = async (
   };
 };
 
-type CreateUpdateDayResponseFailed = {
-  state: "failed";
-  error: string;
-};
-
-type CreateUpdateDayResponseSucceeded = {
-  state: "succeeded";
-};
-
-type CreateUpdateDayResponse =
-  | CreateUpdateDayResponseFailed
-  | CreateUpdateDayResponseSucceeded;
+type CreateUpdateDayResponse = BasicResponseFailed | BasicResponseSucceeded;
 
 export const createDay = async (
   username: string,
@@ -142,9 +126,7 @@ export const createDay = async (
       };
     }
 
-    return {
-      state: "succeeded",
-    };
+    return { state: "succeeded" };
   } catch {
     return {
       state: "failed",
@@ -179,9 +161,7 @@ export const updateDay = async (
       };
     }
 
-    return {
-      state: "succeeded",
-    };
+    return { state: "succeeded" };
   } catch {
     return {
       state: "failed",

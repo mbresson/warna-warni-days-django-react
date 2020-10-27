@@ -3,6 +3,7 @@ from django.core import mail
 from django.urls import reverse
 from django.test import Client, TestCase
 import re
+from .models import UserProfile
 
 UserModel = get_user_model()
 
@@ -47,6 +48,28 @@ class LoginTestCase(TestCase):
         )
 
 
+class LogoutTestCase(TestCase):
+
+    CLIENT = Client()
+
+    @classmethod
+    def setUpTestData(cls):
+        UserModel.objects.create_user(
+            username='Greta',
+            email='greta@thunberg.com',
+            password='I care for the climate',
+        )
+
+    def setUp(self):
+        self.CLIENT.login(username='Greta', password='I care for the climate')
+
+    def test_returns_200_and_clears_session_if_logged_out_successfully(self):
+        response = self.CLIENT.post(reverse('auth-logout'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.cookies['sessionid'].value, '')
+
+
 class SignupTestCase(TestCase):
 
     CLIENT = Client()
@@ -67,6 +90,11 @@ class SignupTestCase(TestCase):
         self.assertTrue(
             UserModel.objects.filter(username='VikramSeth').exists()
         )
+
+        new_user_profile = UserProfile.objects.get(user__username='VikramSeth')
+
+        self.assertEqual(new_user_profile.preferred_first_weekday,
+                         UserProfile.FirstWeekday.SUNDAY)
 
     def test_cannot_create_user_with_existing_username_or_email(self):
         UserModel.objects.create_user(
@@ -112,28 +140,98 @@ class SignupTestCase(TestCase):
         )
 
 
-class ChangePasswordTestCase(TestCase):
+class AccountTestCase(TestCase):
 
     CLIENT = Client()
 
     @classmethod
     def setUpTestData(cls):
-        UserModel.objects.create_user(
+        user = UserModel.objects.create_user(
             username='Toto',
             email='toto@outlook.com',
-            password='my old password',
+            password='my password',
+        )
+
+        UserProfile.objects.create(
+            user=user,
+            preferred_first_weekday=UserProfile.FirstWeekday.SUNDAY,
         )
 
     def setUp(self):
-        self.CLIENT.login(username='Toto', password='my old password')
+        self.CLIENT.login(username='Toto', password='my password')
 
-    def test_changes_password_if_correctly_authenticated(self):
-        response = self.CLIENT.post(
-            reverse('auth-change-password'),
+    def test_gets_the_user_information(self):
+        response = self.CLIENT.get(reverse('auth-account'))
+
+        self.assertEqual(response.status_code, 200)
+
+        profile = response.json()
+
+        self.assertIn('date_joined', profile)
+
+        profile.pop('date_joined')
+
+        self.assertEqual(
+            profile,
             {
-                'current_password': 'my old password',
-                'new_password': 'my NEW password',
+                'username': 'Toto',
+                'email': 'toto@outlook.com',
+                'preferred_first_weekday': 'S',
+            }
+        )
+
+    def test_can_change_preferred_first_weekday_without_password_check(self):
+        response = self.CLIENT.patch(
+            reverse('auth-account'),
+            {
+                'preferred_first_weekday': 'M',
             },
+            content_type='application/json',
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        user_profile = UserProfile.objects.get(user__username='Toto')
+
+        self.assertEqual(user_profile.preferred_first_weekday, 'M')
+
+    def test_rejects_incorrect_preferred_first_weekday(self):
+        response = self.CLIENT.patch(
+            reverse('auth-account'),
+            {
+                'preferred_first_weekday': 'some day',
+            },
+            content_type='application/json',
+        )
+
+        self.assertEqual(response.status_code, 400)
+
+        self.assertEqual(response.json(), {
+            'preferred_first_weekday': ['"some day" is not a valid choice.']
+        })
+
+    def test_changing_password_requires_current_password_confirmation(self):
+        response = self.CLIENT.patch(
+            reverse('auth-account'),
+            {
+                'password': 'my NEW password',
+            },
+            content_type='application/json',
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json(), {
+            'current_password': 'Incorrect password'
+        })
+
+    def test_changing_password_works_if_current_password_provided(self):
+        response = self.CLIENT.patch(
+            reverse('auth-account'),
+            {
+                'current_password': 'my password',
+                'password': 'my NEW password',
+            },
+            content_type='application/json',
         )
 
         self.assertEqual(response.status_code, 200)
@@ -142,36 +240,82 @@ class ChangePasswordTestCase(TestCase):
 
         self.assertTrue(user.check_password('my NEW password'))
 
-    def test_returns_400_if_current_password_provided_is_wrong(self):
-        response = self.CLIENT.post(
-            reverse('auth-change-password'),
+    def test_changing_email_requires_current_password_confirmation(self):
+        response = self.CLIENT.patch(
+            reverse('auth-account'),
             {
-                'current_password': 'this is wrong',
-                'new_password': 'my NEW password',
+                'email': 'some@email.com',
             },
+            content_type='application/json',
         )
 
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json(), {
-            'current_password': ['Incorrect password']
+            'current_password': 'Incorrect password'
+        })
+
+    def test_returns_400_if_current_password_provided_is_wrong(self):
+        response = self.CLIENT.patch(
+            reverse('auth-account'),
+            {
+                'current_password': 'this is wrong',
+                'password': 'my NEW password',
+            },
+            content_type='application/json',
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json(), {
+            'current_password': 'Incorrect password'
         })
 
     def test_returns_400_if_new_password_does_not_satisfy_basic_requirements(self):
-        response = self.CLIENT.post(
-            reverse('auth-change-password'),
+        response = self.CLIENT.patch(
+            reverse('auth-account'),
             {
-                'current_password': 'my old password',
-                'new_password': 'j',
+                'current_password': 'my password',
+                'password': 'j',
             },
+            content_type='application/json',
         )
 
         self.assertEqual(response.status_code, 400)
 
         self.assertEqual(response.json(), {
-            'new_password': [
+            'password': [
                 'This password is too short. It must contain at least 8 characters.',
                 'This password is too common.'
             ]
+        })
+
+    def test_account_is_successfully_deleted_if_current_password_is_provided(self):
+        response = self.CLIENT.delete(
+            reverse('auth-account'),
+            {
+                'current_password': 'my password',
+            },
+            content_type='application/json',
+        )
+
+        self.assertEqual(response.status_code, 204)
+
+        self.assertFalse(
+            UserModel.objects.filter(username='Toto').exists()
+        )
+
+    def test_account_is_not_deleted_if_password_is_wrong(self):
+        response = self.CLIENT.delete(
+            reverse('auth-account'),
+            {
+                'current_password': 'oups',
+            },
+            content_type='application/json',
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+        self.assertEqual(response.json(), {
+            'current_password': 'Incorrect password'
         })
 
 
@@ -239,53 +383,3 @@ class ResetPasswordTestCase(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.emails_sent(), 0)
-
-
-class DeleteAccountTestCase(TestCase):
-
-    CLIENT = Client()
-
-    @classmethod
-    def setUpTestData(cls):
-        UserModel.objects.create_user(
-            username='foobar',
-            email='foo@bar.com',
-            password='foopass',
-        )
-
-    def setUp(self):
-        self.CLIENT.login(username='foobar', password='foopass')
-
-    def test_account_is_successfully_deleted(self):
-        response = self.CLIENT.post(
-            reverse('auth-delete-account'),
-            {
-                'current_password': 'foopass',
-            },
-        )
-
-        self.assertEqual(response.status_code, 200)
-
-        self.assertFalse(
-            UserModel.objects.filter(username='foobar').exists()
-        )
-
-        response = self.CLIENT.post(
-            reverse('auth-profile'),
-        )
-
-        self.assertEqual(response.status_code, 403)
-
-    def test_account_is_not_deleted_if_password_is_wrong(self):
-        response = self.CLIENT.post(
-            reverse('auth-delete-account'),
-            {
-                'current_password': 'oups',
-            },
-        )
-
-        self.assertEqual(response.status_code, 400)
-
-        self.assertEqual(response.json(), {
-            'current_password': ['Incorrect password']
-        })

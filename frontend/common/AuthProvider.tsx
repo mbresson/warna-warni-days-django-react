@@ -6,6 +6,8 @@ export type AuthStateAuthenticated = {
   username: string;
   email: string;
   dateJoined: Date;
+  preferredFirstWeekday: "sunday" | "monday";
+  refreshInformation: () => void;
 };
 
 export type AuthStateUnauthenticated = {
@@ -37,7 +39,7 @@ export const AuthProvider = ({ children }) => {
 
   async function getUser() {
     try {
-      const response = await fetch("/api/auth/profile/");
+      const response = await fetch("/api/auth/account/");
 
       if (response.status == 200) {
         const profile = await response.json();
@@ -47,6 +49,10 @@ export const AuthProvider = ({ children }) => {
           username: profile.username,
           email: profile.email,
           dateJoined: new Date(profile.date_joined),
+          preferredFirstWeekday: { S: "sunday", M: "monday" }[
+            profile.preferred_first_weekday
+          ],
+          refreshInformation: getUser,
         });
       } else {
         throw Error(`Authentication failed: ${response.status}`);

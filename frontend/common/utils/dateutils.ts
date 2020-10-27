@@ -6,7 +6,7 @@ export const datePlusOneWeek = (date: Date) => {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 7);
 };
 
-export const findFirstDayInFirstWeekOfMonth = (
+export const findSundayAsFirstWeekdayInMonthFirstWeek = (
   year: number,
   month: Month1To12
 ): Date => {
@@ -14,6 +14,18 @@ export const findFirstDayInFirstWeekOfMonth = (
   const firstDayOfMonth = new Date(year, month - 1, 1);
 
   return new Date(year, month - 1, 1 - firstDayOfMonth.getDay());
+};
+
+export const findMondayAsFirstWeekdayInMonthFirstWeek = (
+  year: number,
+  month: Month1To12
+): Date => {
+  // we consider Monday as the first day of the week (not Sunday as is the case in the US)
+  const firstDayOfMonth = new Date(year, month - 1, 1);
+
+  const dayOffset = (firstDayOfMonth.getDay() + 6) % 7;
+
+  return new Date(year, month - 1, 1 - dayOffset);
 };
 
 export const dateToLocalYYYYMMDD = (date: Date): DateYYYYMMDD => {
@@ -46,6 +58,16 @@ export const SORTED_WEEKDAYS_SHORT_LONG = [
   ["Thu", "Thursday"],
   ["Fri", "Friday"],
   ["Sat", "Saturday"],
+];
+
+export const WEEKDAYS_SHORT_LONG_STARTING_FROM_MONDAY = [
+  ["Mon", "Monday"],
+  ["Tue", "Tuesday"],
+  ["Wed", "Wednesday"],
+  ["Thu", "Thursday"],
+  ["Fri", "Friday"],
+  ["Sat", "Saturday"],
+  ["Sun", "Sunday"],
 ];
 
 export const SORTED_MONTHS = [

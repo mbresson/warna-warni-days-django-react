@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import PasswordCheckModal from "../Modals/PasswordCheckModal";
-import { requestPasswordChangeFromServer } from "common/apis/account";
+import { updateAccount } from "common/apis/account";
 import ErrorsList from "components/ErrorsList";
 
 enum FormState {
@@ -10,9 +10,10 @@ enum FormState {
 }
 
 type FormErrors = {
+  internalError?: string;
   newPassword?: string[];
   newPasswordConfirmation?: string[];
-  currentPassword?: string[];
+  currentPassword?: string;
 };
 
 const PasswordChangeForm: React.FC<{}> = () => {
@@ -38,23 +39,26 @@ const PasswordChangeForm: React.FC<{}> = () => {
     setCheckCurrentPassword(false);
     setFormState(FormState.InProgress);
 
-    const response = await requestPasswordChangeFromServer(
-      currentPassword,
-      newPassword
+    const response = await updateAccount(
+      { password: newPassword },
+      currentPassword
     );
 
     if (response.state == "succeeded") {
       setFormState(FormState.Successful);
-    } else {
-      setFormState(FormState.Unsubmitted);
-      setErrors({
-        newPassword: response.errors.new_password,
-        currentPassword: response.errors.current_password,
-      });
+      return;
+    }
 
-      if (response.errors.current_password) {
-        setCheckCurrentPassword(true);
-      }
+    setFormState(FormState.Unsubmitted);
+
+    setErrors({
+      newPassword: response.errors.password,
+      internalError: response.errors.other,
+      currentPassword: response.errors.current_password,
+    });
+
+    if (response.errors.current_password) {
+      setCheckCurrentPassword(true);
     }
   };
 
@@ -72,14 +76,16 @@ const PasswordChangeForm: React.FC<{}> = () => {
     <>
       {checkCurrentPassword ? (
         <PasswordCheckModal
+          key="password-check-modal"
           onPasswordSubmitted={onCurrentPasswordSubmitted}
           onCancel={() => setCheckCurrentPassword(false)}
-          errors={errors.currentPassword}
+          errors={[errors.currentPassword]}
         />
       ) : null}
 
       <form
-        className="text-center p-6"
+        className="text-center"
+        key="password-change-form"
         onSubmit={(e) => {
           e.preventDefault();
 
@@ -129,6 +135,10 @@ const PasswordChangeForm: React.FC<{}> = () => {
               <ErrorsList errors={errors.newPasswordConfirmation} />
             )}
           </div>
+
+          {errors.internalError && (
+            <ErrorsList errors={[errors.internalError]} />
+          )}
         </div>
 
         <button
