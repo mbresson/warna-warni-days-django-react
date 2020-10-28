@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { DateYYYYMMDD, DayData } from "common/types";
 import {
@@ -70,6 +70,14 @@ const Month: React.FC<Properties> = (props) => {
     props.month,
     props.year
   );
+
+  useEffect(() => {
+    const todayKey = dateToLocalYYYYMMDD(props.today);
+    const isEvening = new Date().getHours() > 16;
+    if (!props.days[todayKey] && isEvening) {
+      setDayFormDate(todayKey);
+    }
+  }, [props.today]);
 
   const today = dateToLocalYYYYMMDD(props.today);
 
