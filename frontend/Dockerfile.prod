@@ -1,0 +1,19 @@
+
+########## BASE #########
+
+FROM node:lts
+
+
+########## CONFIGURATION ##########
+
+WORKDIR /home/node
+COPY . ./code
+RUN groupadd -r front && useradd -r -g front front && chown -R front:front ./code
+
+
+########## BUILD #########
+
+WORKDIR /home/node/code
+RUN npm ci && npm run build
+
+CMD npm run start

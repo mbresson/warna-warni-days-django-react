@@ -4,21 +4,19 @@ services:
     api-server:
         build:
             context: ./api-server
-            dockerfile: Dockerfile.dev
-        volumes:
-            - "./api-server:/code"
+            dockerfile: Dockerfile.prod
         ports:
             - 8000:8000
-        env_file: .dev.env
+        env_file: .prod.env
+        depends_on:
+            - db
 
     frontend:
         build:
             context: ./frontend
-            dockerfile: Dockerfile.dev
+            dockerfile: Dockerfile.prod
         environment: 
-            - NODE_ENV=development
-        volumes:
-            - "./frontend:/home/node/code"
+            - NODE_ENV=production
         ports:
             - 3000:3000
 
@@ -26,11 +24,14 @@ services:
         image: postgres:alpine
         ports:
             - 5432:5432
-        env_file: .dev.env
+        env_file: .prod.env
 
     reverse-proxy:
         build:
             context: ./reverse-proxy
-            dockerfile: Dockerfile.dev
+            dockerfile: Dockerfile.prod
         ports:
             - 8080:80
+        depends_on:
+            - api-server
+            - frontend
