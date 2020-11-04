@@ -5,8 +5,8 @@ services:
         build:
             context: ./api-server
             dockerfile: Dockerfile.prod
-        ports:
-            - 8000:8000
+        expose:
+            - 8000
         env_file: .prod.env
         depends_on:
             - db
@@ -17,13 +17,13 @@ services:
             dockerfile: Dockerfile.prod
         environment: 
             - NODE_ENV=production
-        ports:
-            - 3000:3000
+        expose:
+            - 3000
 
     db:
         image: postgres:alpine
-        ports:
-            - 5432:5432
+        expose:
+            - 5432
         env_file: .prod.env
 
     reverse-proxy:
