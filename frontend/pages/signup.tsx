@@ -2,6 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { AuthStateUnauthenticated, useAuth } from "common/AuthProvider";
 import { signUpToServer } from "common/apis/account";
 import ErrorsList from "components/ErrorsList";
 
@@ -22,6 +23,7 @@ const Signup: React.FC<{}> = () => {
   const [queryInProgress, setQueryInProgress] = useState(false);
 
   const router = useRouter();
+  const auth = useAuth() as AuthStateUnauthenticated;
 
   const passwordConfirmationIsCorrect = (): boolean => {
     if (password != passwordConfirmation) {
@@ -46,10 +48,12 @@ const Signup: React.FC<{}> = () => {
     setErrors({});
 
     const signUpResponse = await signUpToServer(username, password, email);
-    setQueryInProgress(false);
     if (signUpResponse.state == "succeeded") {
+      await auth.refreshInformation();
       router.push("/");
     } else {
+      setQueryInProgress(false);
+
       setErrors(signUpResponse.errors);
     }
   };

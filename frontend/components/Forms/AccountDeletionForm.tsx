@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import PasswordCheckModal from "../Modals/PasswordCheckModal";
+import { AuthStateAuthenticated, useAuth } from "common/AuthProvider";
 import { deleteAccountFromServer } from "common/apis/account";
 import ErrorsList from "components/ErrorsList";
 
@@ -14,6 +15,7 @@ const AccountDeletionForm: React.FC<{}> = () => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [inProgress, setInProgress] = useState(false);
   const router = useRouter();
+  const auth = useAuth() as AuthStateAuthenticated;
 
   const onCurrentPasswordSubmitted = async (currentPassword: string) => {
     setCheckCurrentPassword(false);
@@ -22,12 +24,13 @@ const AccountDeletionForm: React.FC<{}> = () => {
 
     const response = await deleteAccountFromServer(currentPassword);
 
-    setInProgress(false);
-
     if (response.state == "succeeded") {
       alert("Your account was successfully deleted. Have a nice day!");
+      await auth.refreshInformation();
       router.push("/login");
     } else {
+      setInProgress(false);
+
       setErrors({
         currentPassword: response.errors.current_password,
         internalError: response.errors.other,

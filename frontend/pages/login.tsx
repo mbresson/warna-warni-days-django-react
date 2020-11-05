@@ -2,6 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { AuthStateUnauthenticated, useAuth } from "common/AuthProvider";
 import { loginToServer } from "common/apis/account";
 
 const Login: React.FC<{}> = () => {
@@ -11,6 +12,7 @@ const Login: React.FC<{}> = () => {
   const [error, setError] = useState("");
 
   const router = useRouter();
+  const auth = useAuth() as AuthStateUnauthenticated;
 
   const onLoginFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -18,12 +20,15 @@ const Login: React.FC<{}> = () => {
     setQueryInProgress(true);
 
     const loginResponse = await loginToServer(username, password);
-    setQueryInProgress(false);
+
     if (loginResponse.state == "succeeded") {
+      await auth.refreshInformation();
       router.push("/");
     } else {
       setError(loginResponse.error);
     }
+
+    setQueryInProgress(false);
   };
 
   return (

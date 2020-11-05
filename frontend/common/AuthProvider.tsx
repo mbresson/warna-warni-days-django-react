@@ -7,11 +7,12 @@ export type AuthStateAuthenticated = {
   email: string;
   dateJoined: Date;
   preferredFirstWeekday: "sunday" | "monday";
-  refreshInformation: () => void;
+  refreshInformation: () => Promise<void>;
 };
 
 export type AuthStateUnauthenticated = {
   state: "unauthenticated";
+  refreshInformation: () => Promise<void>;
 };
 
 export type AuthStateLoading = {
@@ -27,11 +28,7 @@ const AuthContext = createContext<AuthState>({
   state: "loading",
 });
 
-const PATHS_ACCESSIBLE_TO_UNAUTHENTICATED_USERS = [
-  "/login",
-  "/signup",
-  "/reset-password",
-];
+const PUBLIC_PAGES_PATHS = ["/login", "/signup", "/reset-password"];
 
 export const AuthProvider = ({ children }) => {
   const { pathname, events, push } = useRouter();
@@ -58,7 +55,10 @@ export const AuthProvider = ({ children }) => {
         throw Error(`Authentication failed: ${response.status}`);
       }
     } catch (err) {
-      setUser({ state: "unauthenticated" });
+      setUser({
+        state: "unauthenticated",
+        refreshInformation: getUser,
+      });
     }
   }
 
@@ -72,12 +72,11 @@ export const AuthProvider = ({ children }) => {
         return;
       }
 
-      if (
-        !(
-          PATHS_ACCESSIBLE_TO_UNAUTHENTICATED_USERS.includes(url) ||
-          user.state == "authenticated"
-        )
-      ) {
+      const isPublicPage = PUBLIC_PAGES_PATHS.includes(url);
+
+      if (user.state == "authenticated" && isPublicPage) {
+        push("/");
+      } else if (user.state == "unauthenticated" && !isPublicPage) {
         push("/login");
       }
     };
