@@ -38,3 +38,7 @@ This project is build with the following technologies:
 I went with Django because it's a robust and mature framework for web development.
 
 I picked Nextjs and Tailwind to gain practical experience in working with them, while not totally convinced yet about their usefulness.
+
+## Demo
+
+You can see a demo of this project on https://wwd.matthieu-bresson.com/ (this is my private server, so do not use this demo for any private stuff, and keep in mind that I may take it down any day)
