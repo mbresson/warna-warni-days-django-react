@@ -19,8 +19,8 @@ const DayFormModal: React.FC<Properties> = (props) => {
   const ref = useRef();
   const [mounted, setMounted] = useState(false);
   const [day, setDay] = useState<DayData>(props.day);
-  const [customColor, setCustomColor] = useState<HexRRGGBB | null>(
-    PRESET_COLORS.includes(props.day?.color) ? null : props.day?.color
+  const [customColor, setCustomColor] = useState<HexRRGGBB>(
+    PRESET_COLORS.includes(props.day?.color) ? undefined : props.day?.color
   );
   const [error, setError] = useState("");
   const [queryInProgress, setQueryInProgress] = useState(false);
@@ -175,9 +175,8 @@ const DayFormModal: React.FC<Properties> = (props) => {
                     notes: e.target.value,
                   });
                 }}
-              >
-                {day?.notes}
-              </textarea>
+                value={day?.notes}
+              ></textarea>
             </div>
 
             {error && <p className="bad-feeling text-2xl my-8">{error}</p>}
