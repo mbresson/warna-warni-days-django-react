@@ -72,7 +72,7 @@ const DayFormModal: React.FC<Properties> = (props) => {
 
   return createPortal(
     <>
-      <div className="fixed top-0 left-0 w-full min-h-screen bg-opacity-90 bg-gray-300 p-2 lg:p-16 z-10">
+      <div className="fixed top-0 bottom-0 left-0 overflow-y-scroll w-full min-h-screen bg-opacity-90 bg-gray-300 p-2 lg:p-16 z-10">
         <div
           style={{
             background: day?.color
